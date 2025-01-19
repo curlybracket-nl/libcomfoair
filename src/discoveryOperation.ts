@@ -9,46 +9,50 @@ import { Logger } from './util/logging';
  */
 const DISCOVERY_PORT = 56747;
 
-export interface BridgeDetails {
+export interface ComfoControlServerInfo {
     /**
-     * IP address of the bridge
+     * IP address of the device
      */
     address: string;
     /**
-     * UUID of the bridge encodes as HEX string
+     * Port of the device
+     */
+    port: number;
+    /**
+     * UUID of the device encodes as HEX string
      */
     uuid: string;
     /**
-     * Version of the bridge
+     * Version of the device
      */
     version: number;
     /**
-     * MAC address of the bridge
+     * MAC address of the device
      */
     mac: string;
 }
 
 /**
- * The discovery operation to find bridges on the network. Sends a discovery message to one or more broadcast address
- * and listens for responses from bridges. Uses UDP sockets to send and receive messages on the default discovery port (56747).
+ * The discovery operation to find devices on the network. Sends a discovery message to one or more broadcast address
+ * and listens for responses from devices. Uses UDP sockets to send and receive messages on the default discovery port (56747).
  * 
- * For the discovery process to work, the bridges must be on the same network segment as the host running the discovery operation. 
+ * For the discovery process to work, the devices must be on the same network segment as the host running the discovery operation. 
  * If the network is segmented into multiple subnets, the discovery process will not work unless the router is configured to relay discovery message to other subnets. 
  * By default routers do not relay broadcast messages between subnets.
  */
-export class BridgeDiscoveryOperation extends EventEmitter implements Promise<BridgeDetails[]> {
+export class DiscoveryOperation extends EventEmitter implements Promise<ComfoControlServerInfo[]> {
     private readonly socket: dgram.Socket;
     private timeoutHandle: NodeJS.Timeout;
     private broadcastHandle: NodeJS.Timeout;
-    private discoveryPromise: DeferredPromise<BridgeDetails[]>;
-    private discoveredBridges: BridgeDetails[] = [];
+    private discoveryPromise?: DeferredPromise<ComfoControlServerInfo[]>;
+    private discoveredDevices: ComfoControlServerInfo[] = [];
     private broadcastAddresses: string[];
 
-    [Symbol.toStringTag]: string = 'BridgeDiscoveryOperation';
+    [Symbol.toStringTag]: string = 'DiscoveryOperation';
 
     constructor(
         broadcastAddresses: string[] | string,
-        private logger: Logger = new Logger('BridgeDiscoveryOperation')
+        private logger: Logger = new Logger('DiscoveryOperation')
     ) {
         super();
         this.broadcastAddresses = Array.isArray(broadcastAddresses) ? broadcastAddresses : [ broadcastAddresses ];
@@ -59,10 +63,10 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
     }
 
     /**
-     * Initiates the discovery process to find bridges.
+     * Initiates the discovery process to find devices.
      * @param timeout - The duration in milliseconds to run the discovery before timing out.
      * @param abortSignal - Optional AbortSignal to cancel the discovery.
-     * @returns The current instance of BridgeDiscoveryOperation.
+     * @returns The current instance of deviceDiscoveryOperation.
      * @throws Error if a discovery operation is already in progress.
      */
     public discover(options: { timeout: number, limit?: number }, abortSignal?: AbortSignal): this {
@@ -84,12 +88,12 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
                 return;
             }
             this.logger.debug(`Received message from ${rinfo.address}:`, () => msg.toString('hex'));
-            const bridge = this.parseDiscoveryResponse(msg);
-            if (bridge && !this.discoveredBridges.some(b => b.uuid === bridge.uuid)) {
-                this.discoveredBridges.push(bridge);
-                this.logger.info('Discovered bridge at', bridge.address, 'with UUID:', bridge.uuid);
-                this.emit('discover', bridge);
-                if (options.limit && this.discoveredBridges.length >= options.limit) {
+            const device = this.parseDiscoveryResponse(msg);
+            if (device && !this.discoveredDevices.some(b => b.uuid === device.uuid)) {
+                this.discoveredDevices.push(device);
+                this.logger.info('Discovered device at', device.address, 'with UUID:', device.uuid);
+                this.emit('discover', device);
+                if (options.limit && this.discoveredDevices.length >= options.limit) {
                     this.logger.verbose(`Discovery limit (${options.limit}) reached`);
                     this.stop();
                 }
@@ -123,12 +127,16 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
         }
     }
 
-    private parseDiscoveryResponse(msg: Buffer): BridgeDetails | undefined {
+    private parseDiscoveryResponse(msg: Buffer): ComfoControlServerInfo | undefined {
         try {
-            const { response } = GatewayDiscovery.fromBinary(msg, { readUnknownField: true });
+            const { response } = GatewayDiscovery.fromBinary(msg, { readUnknownField: false });
+            if (!response) {
+                throw new Error('Invalid discovery response');
+            }
             const uuid = Buffer.from(response.uuid).toString('hex');
             return {
                 address: response.address,
+                port: DISCOVERY_PORT,
                 version: response.version,
                 uuid,
                 mac: uuid.slice(uuid.length - 12)
@@ -155,7 +163,7 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
 
     private stop() {
         this.logger.info('Discovery stopped');
-        this.discoveryPromise.resolve(this.discoveredBridges);
+        this.discoveryPromise?.resolve(this.discoveredDevices);
         this.emit('completed', this.discoveryPromise);
         this.cleanup();
     }
@@ -166,7 +174,7 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
             clearTimeout(this.timeoutHandle);
         }
         clearInterval(this.broadcastHandle);
-        this.discoveryPromise = null;
+        this.discoveryPromise = undefined;
         this.socket.close();
     }
 
@@ -176,10 +184,13 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
      * @param onrejected - The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    then<TResult1 = BridgeDetails[], TResult2 = never>(
-        onfulfilled?: (value: BridgeDetails[]) => TResult1 | PromiseLike<TResult1>, 
+    then<TResult1 = ComfoControlServerInfo[], TResult2 = never>(
+        onfulfilled?: (value: ComfoControlServerInfo[]) => TResult1 | PromiseLike<TResult1>, 
         onrejected?: (reason: unknown) => TResult2 | PromiseLike<TResult2>
     ): Promise<TResult1 | TResult2> {
+        if (!this.discoveryPromise) {
+            return Promise.reject(new Error('No discovery operation in progress'));
+        }
         return this.discoveryPromise.then(onfulfilled, onrejected);
     }
 
@@ -188,7 +199,10 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
      * @param onrejected - The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: (reason: unknown) => TResult | PromiseLike<TResult>): Promise<BridgeDetails[] | TResult> {
+    catch<TResult = never>(onrejected?: (reason: unknown) => TResult | PromiseLike<TResult>): Promise<ComfoControlServerInfo[] | TResult> {
+        if (!this.discoveryPromise) {
+            return Promise.reject(new Error('No discovery operation in progress'));
+        }
         return this.discoveryPromise.catch(onrejected);
     }
 
@@ -197,7 +211,10 @@ export class BridgeDiscoveryOperation extends EventEmitter implements Promise<Br
      * @param onfinally - The callback to execute when the Promise is settled.
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: () => void): Promise<BridgeDetails[]> {
+    finally(onfinally?: () => void): Promise<ComfoControlServerInfo[]> {
+        if (!this.discoveryPromise) {
+            return Promise.reject(new Error('No discovery operation in progress'));
+        }
         return this.discoveryPromise.finally(onfinally);
     }
 }

@@ -109,7 +109,7 @@ export class FilePrinter extends BasePrinter {
     /**
      * Initialize the file handle for the log file.
      */
-    private async getFileHandle(): Promise<fs.promises.FileHandle> {
+    private async getFileHandle(): Promise<fs.promises.FileHandle | undefined> {
         if (!this.fileHandle) {
             try {
                 await this.ensureLogFileDirectory();
@@ -155,7 +155,7 @@ export class FilePrinter extends BasePrinter {
             if (this.fileHandle) {
                 try {
                     await this.fileHandle.close();
-                    this.fileHandle = null;
+                    this.fileHandle = undefined;
                 } catch (err) {
                     console.error('Failed to close log file:', err);
                 }

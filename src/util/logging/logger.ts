@@ -8,18 +8,19 @@ import { ILogPrinter } from "./logPrinter";
 export class Logger {
     private readonly printers: ILogPrinter[] = [];
     private readonly children: Logger[] = [];
+    private severity: LogLevel;
 
     /*
      * The root appliction logger.
      */
-    static readonly #root: Logger = new Logger('root', null, LogLevel.DEFAULT);
+    static readonly root: Logger = new Logger('root', LogLevel.DEFAULT, undefined);
 
     /**
      * Get the root logger in the hierarchy.
      * @returns The root logger.
      */
     public static getRoot(): Logger {
-        return Logger.#root;
+        return Logger.root;
     }
 
     /**
@@ -30,8 +31,8 @@ export class Logger {
      */
     constructor(
         private name: string,
-        private readonly parent: Logger = Logger.#root,
-        private severity?: LogLevel
+        severity?: LogLevel,
+        private readonly parent: Logger = Logger.root,
     ) { 
         if (parent) {
             parent.children.push(this);
@@ -74,8 +75,8 @@ export class Logger {
      * @param severity - The severity level for the child logger. Defaults to the parent's severity level.
      * @returns The created child logger.
      */
-    public createLogger(name: string, severity: LogLevel = this.severity): Logger {
-        return new Logger(name, this, severity);
+    public createLogger(name: string, severity?: LogLevel ): Logger {
+        return new Logger(name, severity ?? this.severity, this);
     }
 
     /**

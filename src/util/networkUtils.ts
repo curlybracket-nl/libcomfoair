@@ -9,8 +9,11 @@ export class NetworkUtils {
         const interfaces = os.networkInterfaces();
         const broadcastAddresses: string[] = [];
 
-        for (const name of Object.keys(interfaces)) {
-            for (const net of interfaces[name]) {
+        for (const networks of Object.values(interfaces)) {
+            if (!networks) {
+                continue;
+            }
+            for (const net of networks) {
                 if (net.family === 'IPv4' && !net.internal) {
                     const addressParts = net.address.split('.').map(Number);
                     const netmaskParts = net.netmask.split('.').map(Number);
@@ -21,5 +24,9 @@ export class NetworkUtils {
         }
 
         return broadcastAddresses;
+    }
+
+    static getHostname(): string {
+        return os.hostname();
     }
 }
