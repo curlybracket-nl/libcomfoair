@@ -35,9 +35,9 @@ export interface ComfoControlServerInfo {
 /**
  * The discovery operation to find devices on the network. Sends a discovery message to one or more broadcast address
  * and listens for responses from devices. Uses UDP sockets to send and receive messages on the default discovery port (56747).
- * 
- * For the discovery process to work, the devices must be on the same network segment as the host running the discovery operation. 
- * If the network is segmented into multiple subnets, the discovery process will not work unless the router is configured to relay discovery message to other subnets. 
+ *
+ * For the discovery process to work, the devices must be on the same network segment as the host running the discovery operation.
+ * If the network is segmented into multiple subnets, the discovery process will not work unless the router is configured to relay discovery message to other subnets.
  * By default routers do not relay broadcast messages between subnets.
  */
 export class DiscoveryOperation extends EventEmitter implements Promise<ComfoControlServerInfo[]> {
@@ -52,10 +52,10 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
 
     constructor(
         broadcastAddresses: string[] | string,
-        private logger: Logger = new Logger('DiscoveryOperation')
+        private logger: Logger = new Logger('DiscoveryOperation'),
     ) {
         super();
-        this.broadcastAddresses = Array.isArray(broadcastAddresses) ? broadcastAddresses : [ broadcastAddresses ];
+        this.broadcastAddresses = Array.isArray(broadcastAddresses) ? broadcastAddresses : [broadcastAddresses];
         if (this.broadcastAddresses.length === 0) {
             throw new Error('At least one broadcast address must be provided');
         }
@@ -69,7 +69,7 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
      * @returns The current instance of deviceDiscoveryOperation.
      * @throws Error if a discovery operation is already in progress.
      */
-    public discover(options: { timeout: number, limit?: number }, abortSignal?: AbortSignal): this {
+    public discover(options: { timeout: number; limit?: number }, abortSignal?: AbortSignal): this {
         if (this.discoveryPromise) {
             this.logger.error('Discovery operation already in progress');
             throw new Error('Discovery operation already in progress');
@@ -89,7 +89,7 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
             }
             this.logger.debug(`Received message from ${rinfo.address}:`, () => msg.toString('hex'));
             const device = this.parseDiscoveryResponse(msg);
-            if (device && !this.discoveredDevices.some(b => b.uuid === device.uuid)) {
+            if (device && !this.discoveredDevices.some((b) => b.uuid === device.uuid)) {
                 this.discoveredDevices.push(device);
                 this.logger.info('Discovered device at', device.address, 'with UUID:', device.uuid);
                 this.emit('discover', device);
@@ -118,12 +118,10 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
     private sendDiscoveryMessages() {
         const message = GatewayDiscovery.toBinary({ request: {} });
         for (const address of this.broadcastAddresses) {
-            this.logger.debug(`Broadcast on ${address} (${DISCOVERY_PORT}):`, () => Buffer.from(message).toString('hex'));
-            this.socket.send(
-                message, 0, message.length,
-                DISCOVERY_PORT, address, 
-                (err) => err && this.onError(err)
+            this.logger.debug(`Broadcast on ${address} (${DISCOVERY_PORT}):`, () =>
+                Buffer.from(message).toString('hex'),
             );
+            this.socket.send(message, 0, message.length, DISCOVERY_PORT, address, (err) => err && this.onError(err));
         }
     }
 
@@ -139,9 +137,9 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
                 port: DISCOVERY_PORT,
                 version: response.version,
                 uuid,
-                mac: uuid.slice(uuid.length - 12)
-            }
-        } catch(err) {
+                mac: uuid.slice(uuid.length - 12),
+            };
+        } catch (err) {
             this.onError(err);
         }
         return undefined;
@@ -185,8 +183,8 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
      * @returns A Promise for the completion of the callback.
      */
     then<TResult1 = ComfoControlServerInfo[], TResult2 = never>(
-        onfulfilled?: (value: ComfoControlServerInfo[]) => TResult1 | PromiseLike<TResult1>, 
-        onrejected?: (reason: unknown) => TResult2 | PromiseLike<TResult2>
+        onfulfilled?: (value: ComfoControlServerInfo[]) => TResult1 | PromiseLike<TResult1>,
+        onrejected?: (reason: unknown) => TResult2 | PromiseLike<TResult2>,
     ): Promise<TResult1 | TResult2> {
         if (!this.discoveryPromise) {
             return Promise.reject(new Error('No discovery operation in progress'));
@@ -199,7 +197,9 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
      * @param onrejected - The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: (reason: unknown) => TResult | PromiseLike<TResult>): Promise<ComfoControlServerInfo[] | TResult> {
+    catch<TResult = never>(
+        onrejected?: (reason: unknown) => TResult | PromiseLike<TResult>,
+    ): Promise<ComfoControlServerInfo[] | TResult> {
         if (!this.discoveryPromise) {
             return Promise.reject(new Error('No discovery operation in progress'));
         }

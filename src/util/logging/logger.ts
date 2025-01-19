@@ -1,5 +1,5 @@
-import { LogLevel } from "./logLevel";
-import { ILogPrinter } from "./logPrinter";
+import { LogLevel } from './logLevel';
+import { ILogPrinter } from './logPrinter';
 
 /**
  * Logger class for managing log messages.
@@ -33,7 +33,7 @@ export class Logger {
         private name: string,
         severity?: LogLevel,
         private readonly parent: Logger = Logger.root,
-    ) { 
+    ) {
         if (parent) {
             parent.children.push(this);
         }
@@ -75,7 +75,7 @@ export class Logger {
      * @param severity - The severity level for the child logger. Defaults to the parent's severity level.
      * @returns The created child logger.
      */
-    public createLogger(name: string, severity?: LogLevel ): Logger {
+    public createLogger(name: string, severity?: LogLevel): Logger {
         return new Logger(name, severity ?? this.severity, this);
     }
 

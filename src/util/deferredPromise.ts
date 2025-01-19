@@ -33,8 +33,7 @@ export class DeferredPromise<T> implements Promise<T> {
      * @returns The current promise.
      */
     public bind(other: Promise<T>) {
-        other.then(this.resolve.bind(this))
-            .catch(this.reject.bind(this));
+        other.then(this.resolve.bind(this)).catch(this.reject.bind(this));
         return this;
     }
 
@@ -62,11 +61,16 @@ export class DeferredPromise<T> implements Promise<T> {
         this.#resolve(result);
     }
 
-    public then<TResult1 = T, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: unknown) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
+    public then<TResult1 = T, TResult2 = never>(
+        onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>,
+        onrejected?: (reason: unknown) => TResult2 | PromiseLike<TResult2>,
+    ): Promise<TResult1 | TResult2> {
         return this.#innerPromise.then(onfulfilled, onrejected);
     }
 
-    public catch<TResult = never>(onrejected?: (reason: unknown) => TResult | PromiseLike<TResult>): Promise<T | TResult> {
+    public catch<TResult = never>(
+        onrejected?: (reason: unknown) => TResult | PromiseLike<TResult>,
+    ): Promise<T | TResult> {
         return this.#innerPromise.catch(onrejected);
     }
 

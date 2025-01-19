@@ -1,4 +1,21 @@
-import { CnAlarmNotification, CnNodeNotification, CnRmiAsyncConfirm, CnRmiAsyncRequest, CnRmiAsyncResponse, CnRmiRequest, CnRmiResponse, CnRpdoNotification, CnRpdoRequest, CnTimeConfirm, CnTimeRequest, NullMessage, Opcode, RegisterDeviceRequest, StartSessionConfirm, StartSessionRequest } from "./protocol/comfoConnect";
+import {
+    CnAlarmNotification,
+    CnNodeNotification,
+    CnRmiAsyncConfirm,
+    CnRmiAsyncRequest,
+    CnRmiAsyncResponse,
+    CnRmiRequest,
+    CnRmiResponse,
+    CnRpdoNotification,
+    CnRpdoRequest,
+    CnTimeConfirm,
+    CnTimeRequest,
+    NullMessage,
+    Opcode,
+    RegisterDeviceRequest,
+    StartSessionConfirm,
+    StartSessionRequest,
+} from './protocol/comfoConnect';
 
 export const opcodes = {
     [Opcode.NO_OPERATION]: NullMessage,

@@ -1,11 +1,11 @@
-import { Socket } from "node:net";
-import { EventEmitter } from "node:events";
-import { Logger } from "./util/logging/index.js";
-import { ComfoControlMessage } from "./comfoControlMessage.js";
-import { Opcode, GatewayOperation } from "./protocol/comfoConnect.js";
-import { opcodes } from "./opcodes.js";
-import { CLIENT_UUID } from "./consts.js";
-import { ComfoControlHeader } from "./comfoControlHeader.js";
+import { Socket } from 'node:net';
+import { EventEmitter } from 'node:events';
+import { Logger } from './util/logging/index.js';
+import { ComfoControlMessage } from './comfoControlMessage.js';
+import { Opcode, GatewayOperation } from './protocol/comfoConnect.js';
+import { opcodes } from './opcodes.js';
+import { CLIENT_UUID } from './consts.js';
+import { ComfoControlHeader } from './comfoControlHeader.js';
 
 export interface ComfoControlTransportOptions {
     /**
@@ -33,7 +33,7 @@ export interface ComfoControlTransportOptions {
 enum ConnectionState {
     DISCONNECTED,
     CONNECTING,
-    CONNECTED
+    CONNECTED,
 }
 
 /**
@@ -43,16 +43,15 @@ enum ConnectionState {
  * - connect: emitted when the connection to the device is established
  * - message: emitted when a message is received from the device - the message is a ComfoControlMessage instance
  * - disconnect: emitted when the connection to the device is closed - the underlying socket is closed
- * 
+ *
  */
 export class ComfoControlTransport extends EventEmitter {
-
     private socket: Socket | null = null;
     private messageId: number = 0;
     private clientUuid: string;
     private keepAlive: number;
     private state: ConnectionState = ConnectionState.DISCONNECTED;
-    private keepAliveHandle : NodeJS.Timeout | null = null;
+    private keepAliveHandle: NodeJS.Timeout | null = null;
 
     public get isConnected() {
         return this.state === ConnectionState.CONNECTED;
@@ -63,12 +62,12 @@ export class ComfoControlTransport extends EventEmitter {
     }
 
     /**
-     * Create a new device instance with the specified details. 
+     * Create a new device instance with the specified details.
      * Use the static discover method to find devices on the network if you do not have the details.
      */
     constructor(
-        private readonly options: ComfoControlTransportOptions, 
-        private readonly logger: Logger = new Logger('ComfoControlTransport')
+        private readonly options: ComfoControlTransportOptions,
+        private readonly logger: Logger = new Logger('ComfoControlTransport'),
     ) {
         super();
         if (options.clientUuid && options.clientUuid.length > 32) {
@@ -98,11 +97,11 @@ export class ComfoControlTransport extends EventEmitter {
                 this.state = ConnectionState.DISCONNECTED;
                 this.socket = null;
                 reject(err);
-            }
+            };
 
             const onConnectSuccess = () => {
                 this.logger.info(`Connected to ${this.options.address} on port ${this.options.port}`);
-                
+
                 socket.off('error', onConnectError);
                 socket.on('data', this.onSocketData.bind(this));
                 socket.on('error', this.onSocketError.bind(this));
@@ -117,12 +116,12 @@ export class ComfoControlTransport extends EventEmitter {
                 } else {
                     this.logger.info('Keep-alive disabled');
                 }
-                
+
                 this.state = ConnectionState.CONNECTED;
                 this.socket = socket;
                 this.emit('connect');
                 resolve(this);
-            }
+            };
 
             // Connect and listen for connection events
             socket.once('error', onConnectError);
@@ -131,15 +130,17 @@ export class ComfoControlTransport extends EventEmitter {
         });
     }
 
-    public send<
-        T extends keyof typeof opcodes, 
-        TRequest extends ReturnType<typeof opcodes[T]['create']>
-    >(opcode: T, data: TRequest) : Promise<number> {
+    public send<T extends keyof typeof opcodes, TRequest extends ReturnType<(typeof opcodes)[T]['create']>>(
+        opcode: T,
+        data: TRequest,
+    ): Promise<number> {
         if (this.state !== ConnectionState.CONNECTED || this.socket === null) {
-            throw new Error('Cannot send data on a disconnected socket; connect the transport first before calling send');
+            throw new Error(
+                'Cannot send data on a disconnected socket; connect the transport first before calling send',
+            );
         }
 
-        const refId = (++this.messageId);
+        const refId = ++this.messageId;
         const messageBuffer = this.prepareMessage(opcode, refId, data);
 
         this.logger.verbose(`Send ${Opcode[opcode]} (${refId}) >>`, () => JSON.stringify(data));
@@ -147,26 +148,28 @@ export class ComfoControlTransport extends EventEmitter {
 
         const writtenLength = messageBuffer.readUint32BE(0) + 4;
         if (writtenLength !== messageBuffer.length) {
-            throw new Error(`Failed to write message length to buffer; expected ${messageBuffer.length} but got ${writtenLength}`);
+            throw new Error(
+                `Failed to write message length to buffer; expected ${messageBuffer.length} but got ${writtenLength}`,
+            );
         }
-       
+
         return new Promise((resolve, reject) => {
             this.socket!.write(messageBuffer, (err) => {
                 if (err) {
                     this.logger.error('Send error >>', err);
                     reject(err);
-                }
-                else {
+                } else {
                     resolve(refId);
                 }
             });
         });
     }
 
-    private prepareMessage<
-        T extends keyof typeof opcodes, 
-        TRequest extends ReturnType<typeof opcodes[T]['create']>
-    >(opcode: T, id: number, data: TRequest) : Buffer {
+    private prepareMessage<T extends keyof typeof opcodes, TRequest extends ReturnType<(typeof opcodes)[T]['create']>>(
+        opcode: T,
+        id: number,
+        data: TRequest,
+    ): Buffer {
         if (!opcodes[opcode]) {
             throw new Error(`Unsupported opcode: ${Opcode[opcode]}`);
         }
@@ -176,36 +179,37 @@ export class ComfoControlTransport extends EventEmitter {
         return Buffer.concat([header.toBinary(), operation, message]);
     }
 
-    private onSocketData(data: Buffer) : void {
+    private onSocketData(data: Buffer): void {
         this.logger.debug('Recv >>', () => data.toString('hex'));
 
         try {
             const messages = ComfoControlMessage.fromBinary(data);
             for (const message of messages) {
-                this.logger.verbose(`Recv ${message.opcodeName} (${message.id}) >>`, () => JSON.stringify(message.deserialize()));
+                this.logger.verbose(`Recv ${message.opcodeName} (${message.id}) >>`, () =>
+                    JSON.stringify(message.deserialize()),
+                );
                 this.emit('message', message);
             }
-        }
-        catch(err) {
+        } catch (err) {
             this.logger.error('Error processing message:', err);
         }
     }
 
-    private onSocketClose() : void {
-        this.logger.info('Transport socket disconnected');  
+    private onSocketClose(): void {
+        this.logger.info('Transport socket disconnected');
         if (this.keepAliveHandle) {
             clearInterval(this.keepAliveHandle);
-        }  
+        }
         this.state = ConnectionState.DISCONNECTED;
         this.socket = null;
         this.emit('disconnect');
     }
 
-    private onSocketError(err: Error) : void {
+    private onSocketError(err: Error): void {
         this.logger.error('Transport error:', err);
     }
-    
-    private onSocketTimeout() : void {
+
+    private onSocketTimeout(): void {
         this.logger.error('Transport timeout');
         this.socket?.destroy();
     }

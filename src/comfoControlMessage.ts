@@ -1,14 +1,13 @@
-import { GatewayOperation, Opcode, Result } from "./protocol/comfoConnect";
-import { opcodes } from "./opcodes";
-import { ComfoControlHeader } from "./comfoControlHeader";
-import { BinaryReadOptions } from "@protobuf-ts/runtime";
+import { GatewayOperation, Opcode, Result } from './protocol/comfoConnect';
+import { opcodes } from './opcodes';
+import { ComfoControlHeader } from './comfoControlHeader';
+import { BinaryReadOptions } from '@protobuf-ts/runtime';
 
 /**
  * Describes the header of the ComfoAir messages, each message starts with this header.
  * The header is always 38 bytes long.
  */
 export class ComfoControlMessage<T extends keyof typeof opcodes = Opcode.NO_OPERATION> {
-
     public get opcode() {
         return this.operation.opcode;
     }
@@ -30,9 +29,9 @@ export class ComfoControlMessage<T extends keyof typeof opcodes = Opcode.NO_OPER
     }
 
     public constructor(
-        private operation: GatewayOperation, 
-        private message: Uint8Array
-    ) { }
+        private operation: GatewayOperation,
+        private message: Uint8Array,
+    ) {}
 
     public static fromBinary(data: Buffer): Array<ComfoControlMessage> {
         const messages: ComfoControlMessage[] = [];
@@ -43,25 +42,27 @@ export class ComfoControlMessage<T extends keyof typeof opcodes = Opcode.NO_OPER
             messages.push(new ComfoControlMessage(operation, message));
             offset += header.length;
         }
-        return messages;        
+        return messages;
     }
 
     public toString() {
         return `${this.opcodeName} (${this.id}) - ${this.resultName} (${this.resultCode})`;
     }
 
-    public deserialize<D extends keyof typeof opcodes = T>(options?: Partial<BinaryReadOptions>): ReturnType<typeof opcodes[D]['create']> {	
+    public deserialize<D extends keyof typeof opcodes = T>(
+        options?: Partial<BinaryReadOptions>,
+    ): ReturnType<(typeof opcodes)[D]['create']> {
         if (!opcodes[this.opcode]) {
             throw new Error(`Unsupported opcode: ${Opcode[this.opcode]}`);
         }
-        return opcodes[this.opcode].fromBinary(this.message, options) as ReturnType<typeof opcodes[D]['create']>;
+        return opcodes[this.opcode].fromBinary(this.message, options) as ReturnType<(typeof opcodes)[D]['create']>;
     }
 
     /**
      * Returns the message as a untyped JSON object.
      * @returns The message as a JSON object.
      */
-    public toJson(): object {	
+    public toJson(): object {
         return this.deserialize({ readUnknownField: true });
     }
 }

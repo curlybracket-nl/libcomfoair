@@ -1,18 +1,18 @@
 /**
  * Enum representing different data types.
  */
-export enum PropertyDataType {    
-    CN_BOOL = 0,    /** CN_BOOL: `00` (false), `01` (true) */
-    CN_UINT8 = 1,   /** CN_UINT8: `00` (0) until `ff` (255) */
-    CN_UINT16 = 2,  /** CN_UINT16: `3412` = 1234 */
-    CN_UINT32 = 3,  /** CN_UINT32: `7856 3412` = 12345678 */
-    CN_INT8 = 5,    /** CN_INT8 */
-    CN_INT16 = 6,   /** CN_INT16: `3412` = 1234 */
-    CN_INT32 = 7,   /** CN_INT16: `3412` = 1234 */
-    CN_INT64 = 8,   /** CN_INT64 */
-    CN_STRING = 9,  /** CN_STRING */
-    CN_TIME = 10,   /** CN_TIME */
-    CN_VERSION = 11 /** CN_VERSION */
+export enum PropertyDataType {
+    CN_BOOL = 0 /** CN_BOOL: `00` (false), `01` (true) */,
+    CN_UINT8 = 1 /** CN_UINT8: `00` (0) until `ff` (255) */,
+    CN_UINT16 = 2 /** CN_UINT16: `3412` = 1234 */,
+    CN_UINT32 = 3 /** CN_UINT32: `7856 3412` = 12345678 */,
+    CN_INT8 = 5 /** CN_INT8 */,
+    CN_INT16 = 6 /** CN_INT16: `3412` = 1234 */,
+    CN_INT32 = 7 /** CN_INT16: `3412` = 1234 */,
+    CN_INT64 = 8 /** CN_INT64 */,
+    CN_STRING = 9 /** CN_STRING */,
+    CN_TIME = 10 /** CN_TIME */,
+    CN_VERSION = 11 /** CN_VERSION */,
 }
 
 // Define the parsers for each property data type.
@@ -27,7 +27,7 @@ const PropertyDataTypeParsers = {
     [PropertyDataType.CN_INT64]: (data: Buffer) => data.readBigInt64LE(),
     [PropertyDataType.CN_STRING]: (data: Buffer) => data.toString('utf8'),
     [PropertyDataType.CN_TIME]: (data: Buffer) => data.readUInt32LE(),
-    [PropertyDataType.CN_VERSION]: (data: Buffer) => data.toString('utf8')
+    [PropertyDataType.CN_VERSION]: (data: Buffer) => data.toString('utf8'),
 } as const;
 
 export interface DeviceProperty {
@@ -36,10 +36,16 @@ export interface DeviceProperty {
 }
 
 // Generic type for the property data from the parsers
-export type PropertyJsType<T extends PropertyDataType> = typeof PropertyDataTypeParsers[T] extends (data: Buffer) => infer R ? R : never;
+export type PropertyJsType<T extends PropertyDataType> = (typeof PropertyDataTypeParsers)[T] extends (
+    data: Buffer,
+) => infer R
+    ? R
+    : never;
 export type DevicePropertyType<T extends DeviceProperty> = PropertyJsType<T['dataType']>;
-export type ComfoAirPropertyType<P extends keyof typeof ComfoAirProperties> = DevicePropertyType<typeof ComfoAirProperties[P]>;
-  
+export type ComfoAirPropertyType<P extends keyof typeof ComfoAirProperties> = DevicePropertyType<
+    (typeof ComfoAirProperties)[P]
+>;
+
 /**
  * Object representing different properties with their propertyId and dataType.
  */
@@ -125,9 +131,8 @@ export const ComfoAirProperties = {
     /** Temperature & Humidity: Supply Air (`23` = 35%) */
     SUPPLY_AIR_HUMIDITY: { propertyId: 294, dataType: PropertyDataType.CN_UINT8 },
     /** ComfoCoolCompressor State */
-    COMFOCOOL_COMPRESSOR_STATE: { propertyId: 785, dataType: PropertyDataType.CN_BOOL }
+    COMFOCOOL_COMPRESSOR_STATE: { propertyId: 785, dataType: PropertyDataType.CN_BOOL },
 } as const;
-
 
 /**
  * Get the value of a property from the data buffer.
@@ -145,7 +150,9 @@ export function getPropertyValue<T extends DeviceProperty>(property: T, data: Bu
  * @returns The property object.
  */
 export function getProperty(id: number): DeviceProperty | undefined {
-    return Object.values(ComfoAirProperties).find(prop => typeof prop === 'object' && prop.propertyId === id) as DeviceProperty;
+    return Object.values(ComfoAirProperties).find(
+        (prop) => typeof prop === 'object' && prop.propertyId === id,
+    ) as DeviceProperty;
 }
 
 /**
@@ -154,5 +161,7 @@ export function getProperty(id: number): DeviceProperty | undefined {
  * @returns The property name.
  */
 export function getPropertyName(id: number): string | undefined {
-    return Object.entries(ComfoAirProperties).find(([,prop]) => typeof prop === 'object' && prop.propertyId === id)?.[0];
+    return Object.entries(ComfoAirProperties).find(
+        ([, prop]) => typeof prop === 'object' && prop.propertyId === id,
+    )?.[0];
 }

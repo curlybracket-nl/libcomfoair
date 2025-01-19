@@ -1,4 +1,4 @@
-import { LogLevel } from "./logLevel";
+import { LogLevel } from './logLevel';
 import * as fs from 'fs';
 
 /**
@@ -100,10 +100,7 @@ export class FilePrinter extends BasePrinter {
      * Ensure the log file directory exists.
      */
     private async ensureLogFileDirectory(): Promise<void> {
-        await fs.promises.mkdir(
-            this.logFilePath.substring(0, this.logFilePath.lastIndexOf('/')),
-            { recursive: true }
-        );
+        await fs.promises.mkdir(this.logFilePath.substring(0, this.logFilePath.lastIndexOf('/')), { recursive: true });
     }
 
     /**
@@ -113,7 +110,10 @@ export class FilePrinter extends BasePrinter {
         if (!this.fileHandle) {
             try {
                 await this.ensureLogFileDirectory();
-                const fileExists = await fs.promises.access(this.logFilePath).then(() => true).catch(() => false);
+                const fileExists = await fs.promises
+                    .access(this.logFilePath)
+                    .then(() => true)
+                    .catch(() => false);
                 this.fileHandle = await fs.promises.open(this.logFilePath, 'a');
                 if (!fileExists) {
                     const header = this.createLogEntry('INFO', 'FilePrinter', '--- Logging session started ---');
@@ -139,7 +139,7 @@ export class FilePrinter extends BasePrinter {
             timestamp: Math.floor(Date.now() / 1000),
             level: level,
             name: name,
-            message: message
+            message: message,
         };
         return JSON.stringify(logEntry) + '\n';
     }

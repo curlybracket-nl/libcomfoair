@@ -9,5 +9,5 @@ export enum LogLevel {
     WARNING = 1 << 3,
     ERROR = 1 << 4,
     DEFAULT = INFO | WARNING | ERROR,
-    ALL = INFO | VERBOSE | DEBUG | WARNING | ERROR
+    ALL = INFO | VERBOSE | DEBUG | WARNING | ERROR,
 }

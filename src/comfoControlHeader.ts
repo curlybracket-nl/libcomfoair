@@ -1,4 +1,4 @@
-import { GatewayOperation } from "./protocol/comfoConnect";
+import { GatewayOperation } from './protocol/comfoConnect';
 
 /**
  * All ComfoAir messages start with a 38 byte header.
@@ -50,7 +50,9 @@ export class ComfoControlHeader {
 
     public static fromBinary(data: Buffer, offset: number = 0): ComfoControlHeader {
         if (data.length - offset < COMFO_MESSAGE_HEADER_LENGTH) {
-            throw new Error(`Not enough bytes in buffer to read header; expected 38 bytes but got ${data.length - offset}`);
+            throw new Error(
+                `Not enough bytes in buffer to read header; expected 38 bytes but got ${data.length - offset}`,
+            );
         }
         const totalLength = data.readUInt32BE(0 + offset) + 4;
         const senderUuid = data.toString('hex', 4 + offset, 20 + offset);
@@ -71,14 +73,18 @@ export class ComfoControlHeader {
 
     public getOperationBuffer(data: Buffer, offset: number = 0): Buffer {
         if (data.length < this.opOffset + this.opLength + offset) {
-            throw new Error(`Not enough bytes in buffer to read operation; expected ${this.opLength} bytes but got ${data.length - offset}`);
+            throw new Error(
+                `Not enough bytes in buffer to read operation; expected ${this.opLength} bytes but got ${data.length - offset}`,
+            );
         }
         return data.subarray(this.opOffset + offset, this.opOffset + this.opLength + offset);
     }
 
     public getMessageBuffer(data: Buffer, offset: number = 0): Buffer {
         if (data.length < this.messageOffset + this.messageLength + offset) {
-            throw new Error(`Not enough bytes in buffer to read message; expected ${this.messageLength} bytes but got ${data.length - offset}`);
+            throw new Error(
+                `Not enough bytes in buffer to read message; expected ${this.messageLength} bytes but got ${data.length - offset}`,
+            );
         }
         return data.subarray(this.messageOffset + offset, this.messageOffset + this.messageLength + offset);
     }
