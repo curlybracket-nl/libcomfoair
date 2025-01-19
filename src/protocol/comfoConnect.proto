@@ -11,3 +11,186 @@ message GatewayDiscovery {
     Request request = 1;
     Response response = 2;
 }
+
+enum Opcode {
+    NO_OPERATION = 0;
+    SET_ADDRESS_REQUEST = 1;
+    REGISTER_DEVICE_REQUEST = 2;
+    START_SESSION_REQUEST = 3;
+    CLOSE_SESSION_REQUEST = 4;
+    LIST_REGISTERED_APPS_REQUEST = 5;
+    UNREGISTER_DEVICE_REQUEST = 6;
+    CHANGE_PIN_REQUEST = 7;
+    GET_REMOTE_ACCESS_ID_REQUEST = 8;
+    SET_REMOTE_ACCESS_ID_REQUEST = 9;
+    GET_SUPPORT_ID_REQUEST = 10;
+    SET_SUPPORT_ID_REQUEST = 11;
+    GET_WEB_ID_REQUEST = 12;
+    SET_WEB_ID_REQUEST = 13;
+    SET_PUSH_ID_REQUEST = 14;
+    DEBUG_REQUEST = 15;
+    UPGRADE_REQUEST = 16;
+    SET_DEVICE_SETTINGS_REQUEST = 17;
+    VERSION_REQUEST = 18;
+
+    SET_ADDRESS_CONFIRM = 51;
+    REGISTER_DEVICE_CONFIRM = 52;
+    START_SESSION_CONFIRM = 53;
+    CLOSE_SESSION_CONFIRM = 54;
+    LIST_REGISTERED_APPS_CONFIRM = 55;
+    UNREGISTER_DEVICE_CONFIRM = 56;
+    CHANGE_PIN_CONFIRM = 57;
+    GET_REMOTE_ACCESS_ID_CONFIRM = 58;
+    SET_REMOTE_ACCESS_ID_CONFIRM = 59;
+    GET_SUPPORT_ID_CONFIRM = 60;
+    SET_SUPPORT_ID_CONFIRM = 61;
+    GET_WEB_ID_CONFIRM = 62;
+    SET_WEB_ID_CONFIRM = 63;
+    SET_PUSH_ID_CONFIRM = 64;
+    DEBUG_CONFIRM = 65;
+    UPGRADE_CONFIRM = 66;
+    SET_DEVICE_SETTINGS_CONFIRM = 67;
+    VERSION_CONFIRM = 68;
+
+    GATEWAY_NOTIFICATION = 100;
+    KEEP_ALIVE = 101;
+    FACTORY_RESET = 102;
+
+    CN_TIME_REQUEST = 30;
+    CN_TIME_CONFIRM = 31;
+    CN_NODE_REQUEST = 42;
+    CN_NODE_NOTIFICATION = 32;
+    CN_RMI_REQUEST = 33;
+    CN_RMI_RESPONSE = 34;
+    CN_RMI_ASYNC_REQUEST = 35;
+    CN_RMI_ASYNC_CONFIRM = 36;
+    CN_RMI_ASYNC_RESPONSE = 37;
+    CN_RPDO_REQUEST = 38;
+    CN_RPDO_CONFIRM = 39;
+    CN_RPDO_NOTIFICATION = 40;
+    CN_ALARM_NOTIFICATION = 41;
+
+    CN_FUP_READ_REGISTER_REQUEST = 70;
+    CN_FUP_READ_REGISTER_CONFIRM = 71;
+    CN_FUP_PROGRAM_BEGIN_REQUEST = 72;
+    CN_FUP_PROGRAM_BEGIN_CONFIRM = 73;
+    CN_FUP_PROGRAM_REQUEST = 74;
+    CN_FUP_PROGRAM_CONFIRM = 75;
+    CN_FUP_PROGRAM_END_REQUEST = 76;
+    CN_FUP_PROGRAM_END_CONFIRM = 77;
+    CN_FUP_READ_REQUEST = 78;
+    CN_FUP_READ_CONFIRM = 79;
+    CN_FUP_RESET_REQUEST = 80;
+    CN_FUP_RESET_CONFIRM = 81;
+}
+
+enum Result {
+    OK = 0;
+    BAD_REQUEST = 1;
+    INTERNAL_ERROR = 2;
+    NOT_REACHABLE = 3;
+    OTHER_SESSION = 4;
+    NOT_ALLOWED = 5;
+    NO_RESOURCES = 6;
+    NOT_EXIST = 7;
+    RMI_ERROR = 8;
+}
+
+message GatewayOperation {
+    Opcode opcode = 1;
+    optional Result result = 2;
+    optional string description = 3;
+    uint32 id = 4;
+}
+
+message RegisterDeviceRequest {
+    bytes uuid = 1;
+    optional uint32 pin = 2;
+    string deviceName = 3;
+}
+
+message StartSessionRequest {
+    optional bool takeover = 1;
+}
+
+message StartSessionConfirm {
+    string deviceName = 1;
+    bool resumed = 2;
+}
+
+message CnNodeNotification {
+    enum NodeModeType {
+        NODE_LEGACY = 0;
+        NODE_OFFLINE = 1;
+        NODE_NORMAL = 2;
+        NODE_UPDATE = 3;
+    }
+    uint32 nodeId = 1;
+    uint32 productId = 2;
+    uint32 zoneId = 3;
+    CnNodeNotification.NodeModeType mode = 4;
+}
+
+message CnAlarmNotification {
+    uint32 zone = 1;
+    uint32 productId = 2;
+    uint32 productVariant = 3;
+    string serialNumber = 4;
+    uint32 swProgramVersion = 5;
+    bytes errors = 6;
+    uint32 errorId = 7;
+    uint32 nodeId = 8;
+}
+
+message VersionConfirm {
+    uint32 gatewayVersion = 1;
+    string serialNumber = 2;
+    uint32 comfoNetVersion = 3;
+}
+
+message CnTimeRequest {
+    optional uint32 setTime = 1;
+}
+
+message CnTimeConfirm {
+    uint32 currentTime = 1;
+}
+
+message CnRpdoRequest {
+    uint32 pdid = 1;
+    optional uint32 zone = 2; //default = 255;
+    uint32 type = 3;
+    optional uint32 timeout = 4; //default = 4294967295;
+}
+
+message CnRpdoNotification {
+    uint32 pdid = 1;
+    bytes data = 2;
+}
+
+message CnRmiRequest {
+    uint32 nodeId = 1;
+    bytes message = 2;
+}
+
+message CnRmiResponse {
+    uint32 result = 1;
+    bytes message = 2;
+}
+
+message CnRmiAsyncRequest {
+    uint32 nodeId = 1;
+    bytes message = 2;
+}
+
+message CnRmiAsyncConfirm {
+    uint32 result = 1;
+}
+
+message CnRmiAsyncResponse {
+    uint32 result = 1;
+    bytes message = 2;
+}
+
+message NullMessage {
+}
