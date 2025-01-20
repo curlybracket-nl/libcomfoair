@@ -45,7 +45,11 @@ enum ConnectionState {
  * - disconnect: emitted when the connection to the device is closed - the underlying socket is closed
  *
  */
-export class ComfoControlTransport extends EventEmitter {
+export class ComfoControlTransport extends EventEmitter< {
+    connect: [ ];
+    message: [ ComfoControlMessage ];
+    disconnect: [ ];
+}> {
     private socket: Socket | null = null;
     private messageId: number = 0;
     private clientUuid: string;
@@ -184,12 +188,12 @@ export class ComfoControlTransport extends EventEmitter {
 
         try {
             const messages = ComfoControlMessage.fromBinary(data);
-            for (const message of messages) {
+            messages.forEach((message) => {
                 this.logger.verbose(`Recv ${message.opcodeName} (${message.id}) >>`, () =>
                     JSON.stringify(message.deserialize()),
                 );
                 this.emit('message', message);
-            }
+            });
         } catch (err) {
             this.logger.error('Error processing message:', err);
         }
