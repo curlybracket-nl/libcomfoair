@@ -42,8 +42,8 @@ export class ComfoControlHeader {
     }
 
     constructor(senderUuid: string, receiverUuid: string, opLength: number, messageLength: number) {
-        this.senderUuid = senderUuid;
-        this.receiverUuid = receiverUuid;
+        this.senderUuid = senderUuid.padStart(32, '0');
+        this.receiverUuid = receiverUuid.padStart(32, '0');
         this.opLength = opLength;
         this.messageLength = messageLength;
     }
@@ -65,25 +65,25 @@ export class ComfoControlHeader {
     public toBinary(): Buffer {
         const header = Buffer.alloc(COMFO_MESSAGE_HEADER_LENGTH);
         header.writeUInt32BE(this.length - 4, 0);
-        header.write(this.senderUuid, 4, 32, 'hex');
-        header.write(this.receiverUuid, 20, 32, 'hex');
+        header.write(this.senderUuid, 4, 16, 'hex');
+        header.write(this.receiverUuid, 20, 16, 'hex');
         header.writeUInt16BE(this.opLength, 36);
         return header;
     }
 
     public getOperationBuffer(data: Buffer, offset: number = 0): Buffer {
-        if (data.length < this.opOffset + this.opLength + offset) {
+        if (data.length - offset < this.opOffset + this.opLength) {
             throw new Error(
-                `Not enough bytes in buffer to read operation; expected ${this.opLength} bytes but got ${data.length - offset}`,
+                `Not enough bytes in buffer to read operation; expected ${this.opLength} bytes but buffer has ${Math.max(data.length - (this.opOffset + offset), 0)} bytes left`,
             );
         }
         return data.subarray(this.opOffset + offset, this.opOffset + this.opLength + offset);
     }
 
     public getMessageBuffer(data: Buffer, offset: number = 0): Buffer {
-        if (data.length < this.messageOffset + this.messageLength + offset) {
+        if (data.length - offset < this.messageOffset + this.messageLength) {
             throw new Error(
-                `Not enough bytes in buffer to read message; expected ${this.messageLength} bytes but got ${data.length - offset}`,
+                `Not enough bytes in buffer to read message; expected ${this.messageLength} bytes but buffer has ${Math.max(data.length - (this.messageOffset + offset), 0)} bytes left`,
             );
         }
         return data.subarray(this.messageOffset + offset, this.messageOffset + this.messageLength + offset);
