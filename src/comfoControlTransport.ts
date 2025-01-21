@@ -4,7 +4,7 @@ import { Logger } from './util/logging/index.js';
 import { ComfoControlMessage } from './comfoControlMessage.js';
 import { Opcode, GatewayOperation } from './protocol/comfoConnect.js';
 import { opcodes } from './opcodes.js';
-import { CLIENT_UUID } from './consts.js';
+import { CLIENT_UUID, GATEWAY_PORT } from './consts.js';
 import { ComfoControlHeader } from './comfoControlHeader.js';
 
 export interface ComfoControlTransportOptions {
@@ -13,15 +13,15 @@ export interface ComfoControlTransportOptions {
      */
     address: string;
     /**
-     * Port of the device
+     * Port of the device defaults to 5674; see {@link GATEWAY_PORT} constant
      */
-    port: number;
+    port?: number;
     /**
      * UUID of the device encodes as HEX string of exactly 32 characters
      */
     uuid: string;
     /**
-     * The UUID of the client; defaults to the default client UUID: see {@link CLIENT_UUID}
+     * The UUID of the client; defaults to the default client UUID: see {@link CLIENT_UUID} constant
      */
     clientUuid?: string;
     /**
@@ -130,7 +130,7 @@ export class ComfoControlTransport extends EventEmitter< {
             // Connect and listen for connection events
             socket.once('error', onConnectError);
             socket.once('connect', onConnectSuccess);
-            socket.connect(this.options.port, this.options.address);
+            socket.connect(this.options.port ?? GATEWAY_PORT, this.options.address);
         });
     }
 

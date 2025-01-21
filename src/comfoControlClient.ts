@@ -1,4 +1,4 @@
-import { ComfoControlServerInfo, DiscoveryOperation } from './discoveryOperation.js';
+import { DiscoveryOperation } from './discoveryOperation.js';
 import { NetworkUtils } from './util/networkUtils.js';
 import { Logger } from './util/logging/index.js';
 import { Opcode, Result } from './protocol/comfoConnect.js';
@@ -9,14 +9,27 @@ import { ComfoControlTransport } from './comfoControlTransport.js';
 import { NodeProductType } from './consts.js';
 import { DeviceProperty, DevicePropertyType, getPropertyName, getPropertyValue } from './deviceProperties.js';
 
-interface DiscoverOptions {
+export interface DiscoverOptions {
     broadcastAddresses?: string | string[];
+    port: number;
     timeout?: number;
     limit?: number;
     abortSignal?: AbortSignal;
 }
 
-interface ComfoControlClientOptions extends ComfoControlServerInfo {
+export interface ComfoControlClientOptions {
+    /**
+     * IP address of the device
+     */
+    address: string;
+    /**
+     * Port of the device, defaults to 56747 if not set
+     */
+    port?: number;
+    /**
+     * UUID of the device encodes as HEX string
+     */
+    uuid: string;
     /**
      * The name of the device that is connecting to the device.
      * If not specified, the hostname of the device will be used.
@@ -25,7 +38,7 @@ interface ComfoControlClientOptions extends ComfoControlServerInfo {
     /**
      * 12 byte client ID that is unique to this device.
      */
-    clientId?: string;
+    clientUuid?: string;
     /**
      * 4 character PIN code to authenticate with the device. Defaults to 0 when not specified.
      */
@@ -139,7 +152,7 @@ export class ComfoControlClient {
      * @returns {Promise<void>} A promise that resolves when the session is successfully started.
      * @throws Will throw an error if the session is already active or in the process of starting, or if the registration or session start fails.
      */
-    public async startSession() {
+    public async startSession(): Promise<void> {
         if (this.sessionState !== SessionState.None) {
             throw new Error('Session is already active or in the process of starting');
         }
@@ -285,7 +298,7 @@ export class ComfoControlClient {
      * @returns {Promise<Date>} A promise that resolves to the current server time as a Date object.
      * @throws Will throw an error if the request fails or the response is invalid.
      */
-    public async getServerTime() {
+    public async getServerTime(): Promise<Date> {
         const response = await this.send(Opcode.CN_TIME_REQUEST);
         const msg = response.deserialize();
         return new Date(new Date(2000, 1, 1).getTime() + msg.currentTime * 1000);
@@ -301,7 +314,7 @@ export class ComfoControlClient {
      * @returns {Promise<void>} A promise that resolves when the property listener is successfully registered.
      * @throws Will throw an error if the request to register the property updates fails.
      */
-    public async registerPropertyListener<T extends DeviceProperty>(property: T, listener: DevicePropertyListner<T>) {
+    public async registerPropertyListener<T extends DeviceProperty>(property: T, listener: DevicePropertyListner<T>): Promise<void> {
         if (!this.propertyListeners[property.propertyId]) {
             await this.requestPropertyUpdates(property);
             this.propertyListeners[property.propertyId] = [];

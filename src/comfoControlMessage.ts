@@ -33,6 +33,13 @@ export class ComfoControlMessage<T extends keyof typeof opcodes = Opcode.NO_OPER
         private message: Uint8Array,
     ) {}
 
+    public static fromJson<D extends keyof typeof opcodes>(operation: GatewayOperation & { opcode: D }, message?: ReturnType<(typeof opcodes)[D]['create']>): ComfoControlMessage {
+        return new ComfoControlMessage(
+            operation, 
+            Buffer.from(opcodes[operation.opcode].toBinary((message ?? {}) as any))
+        );
+    }
+
     public static fromBinary(data: Buffer): Array<ComfoControlMessage> {
         const messages: ComfoControlMessage[] = [];
         for (let offset = 0; offset < data.length; ) {

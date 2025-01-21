@@ -3,11 +3,7 @@ import { EventEmitter } from 'events';
 import { DeferredPromise } from './util/deferredPromise.js';
 import { GatewayDiscovery } from './protocol/comfoConnect.js';
 import { Logger } from './util/logging';
-
-/**
- * The default port the LAN-C gateway listens on for discovery messages.
- */
-const DISCOVERY_PORT = 56747;
+import { DISCOVERY_PORT } from './consts.js';
 
 export interface ComfoControlServerInfo {
     /**
@@ -52,6 +48,7 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
 
     constructor(
         broadcastAddresses: string[] | string,
+        private port = DISCOVERY_PORT,
         private logger: Logger = new Logger('DiscoveryOperation'),
     ) {
         super();
@@ -118,10 +115,10 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
     private sendDiscoveryMessages() {
         const message = GatewayDiscovery.toBinary({ request: {} });
         for (const address of this.broadcastAddresses) {
-            this.logger.debug(`Broadcast on ${address} (${DISCOVERY_PORT}):`, () =>
+            this.logger.debug(`Broadcast on ${address} (${this.port}):`, () =>
                 Buffer.from(message).toString('hex'),
             );
-            this.socket.send(message, 0, message.length, DISCOVERY_PORT, address, (err) => err && this.onError(err));
+            this.socket.send(message, 0, message.length, this.port, address, (err) => err && this.onError(err));
         }
     }
 
@@ -134,7 +131,7 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
             const uuid = Buffer.from(response.uuid).toString('hex');
             return {
                 address: response.address,
-                port: DISCOVERY_PORT,
+                port: this.port,
                 version: response.version,
                 uuid,
                 mac: uuid.slice(uuid.length - 12),

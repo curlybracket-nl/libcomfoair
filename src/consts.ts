@@ -4,6 +4,16 @@
 export const CLIENT_UUID = '20200428000000000000000009080408';
 
 /**
+ * The default port the LAN-C gateway listens on for client connections (TCP)
+ */
+export const GATEWAY_PORT = 56747;
+
+/**
+ * The default port the LAN-C gateway listens on for discovery messages (UDP)
+ */
+export const DISCOVERY_PORT = 56747;
+
+/**
  * Enum representing different product types.
  */
 export enum NodeProductType {
