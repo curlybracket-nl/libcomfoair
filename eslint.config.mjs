@@ -12,6 +12,7 @@ export default tseslint.config(
     ignores: ['**/out/**', '**/tmp/**', '**/coverage/**', '**/src/protocol/**'],
   },
   eslint.configs.recommended,
+  // @ts-ignore
   eslintConfigPrettier,
   {
     extends: [...tseslint.configs.recommended],
