@@ -1,5 +1,5 @@
-import { LogLevel } from './logLevel';
-import { ILogPrinter } from './logPrinter';
+import { LogLevel } from './logLevel.js';
+import { ILogPrinter } from './logPrinter.js';
 
 /**
  * Logger class for managing log messages.

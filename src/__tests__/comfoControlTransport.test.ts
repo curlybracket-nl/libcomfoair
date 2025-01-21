@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { EventEmitter } from 'node:events';
-import { ComfoControlTransport } from '../comfoControlTransport';
-import { Opcode, StartSessionConfirm, GatewayOperation } from '../protocol/comfoConnect';
+import { ComfoControlTransport } from '../comfoControlTransport.js';
+import { Opcode, StartSessionConfirm, GatewayOperation } from '../protocol/comfoConnect.js';
 import { Socket } from 'node:net';
-import { ComfoControlHeader } from '../comfoControlHeader';
-import { ComfoControlMessage } from '../comfoControlMessage';
+import { ComfoControlHeader } from '../comfoControlHeader.js';
+import { ComfoControlMessage } from '../comfoControlMessage.js';
 
 vi.mock('node:net', () => {
     const socketMock = new EventEmitter() as Socket;
@@ -22,7 +22,7 @@ describe('ComfoControlTransport', () => {
     beforeEach(() => {
         mockSocket = (Socket as any)();
         mockSocket.removeAllListeners();
-        mockSocket.connect.mockImplementation((port: number, address: string, cb: any) => {
+        mockSocket.connect.mockImplementation((_port: number, _address: string, cb: any) => {
             process.nextTick(() => {
                 mockSocket.emit('connect');
                 cb?.();
@@ -47,7 +47,7 @@ describe('ComfoControlTransport', () => {
     });
 
     it('should fail to connect if socket errors', async () => {
-        mockSocket.connect.mockImplementation((port: number, address: string, cb: any) => {
+        mockSocket.connect.mockImplementation((_port: number, _address: string, cb: any) => {
             process.nextTick(() => {
                 mockSocket.emit('error', new Error('mock connection error'));
                 cb?.(new Error('mock connection error'));

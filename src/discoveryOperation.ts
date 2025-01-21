@@ -2,7 +2,7 @@ import dgram from 'node:dgram';
 import { EventEmitter } from 'events';
 import { DeferredPromise } from './util/deferredPromise.js';
 import { GatewayDiscovery } from './protocol/comfoConnect.js';
-import { Logger } from './util/logging';
+import { Logger } from './util/logging/index.js';
 import { DISCOVERY_PORT } from './consts.js';
 
 export interface ComfoControlServerInfo {

@@ -1,4 +1,4 @@
-import { LogLevel } from './logLevel';
+import { LogLevel } from './logLevel.js';
 import * as fs from 'fs';
 
 /**

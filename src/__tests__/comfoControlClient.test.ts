@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { EventEmitter } from 'node:events';
-import { ComfoControlClient } from '../comfoControlClient';
-import { ComfoControlTransport } from '../comfoControlTransport';
-import { Opcode, Result } from '../protocol/comfoConnect';
-import { Logger } from '../util/logging/index';
-import { DeviceProperty } from '../deviceProperties';
-import { ComfoControlMessage } from '../comfoControlMessage';
+import { ComfoControlClient } from '../comfoControlClient.js';
+import { ComfoControlTransport } from '../comfoControlTransport.js';
+import { Opcode, Result } from '../protocol/comfoConnect.js';
+import { Logger } from '../util/logging/index.js';
+import { DeviceProperty } from '../deviceProperties.js';
+import { ComfoControlMessage } from '../comfoControlMessage.js';
 
 vi.mock('../comfoControlTransport', () => {
     const transportMock = new EventEmitter() as any;

@@ -11,7 +11,7 @@ import { DeviceProperty, DevicePropertyType, getPropertyName, getPropertyValue }
 
 export interface DiscoverOptions {
     broadcastAddresses?: string | string[];
-    port: number;
+    port?: number;
     timeout?: number;
     limit?: number;
     abortSignal?: AbortSignal;

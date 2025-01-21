@@ -1,6 +1,6 @@
-import { GatewayOperation, Opcode, Result } from './protocol/comfoConnect';
-import { opcodes } from './opcodes';
-import { ComfoControlHeader } from './comfoControlHeader';
+import { GatewayOperation, Opcode, Result } from './protocol/comfoConnect.js';
+import { opcodes } from './opcodes.js';
+import { ComfoControlHeader } from './comfoControlHeader.js';
 import { BinaryReadOptions } from '@protobuf-ts/runtime';
 
 /**
@@ -36,6 +36,7 @@ export class ComfoControlMessage<T extends keyof typeof opcodes = Opcode.NO_OPER
     public static fromJson<D extends keyof typeof opcodes>(operation: GatewayOperation & { opcode: D }, message?: ReturnType<(typeof opcodes)[D]['create']>): ComfoControlMessage {
         return new ComfoControlMessage(
             operation, 
+            // eslint-disable-next-line
             Buffer.from(opcodes[operation.opcode].toBinary((message ?? {}) as any))
         );
     }

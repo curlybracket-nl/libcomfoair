@@ -15,7 +15,7 @@ import {
     RegisterDeviceRequest,
     StartSessionConfirm,
     StartSessionRequest,
-} from './protocol/comfoConnect';
+} from './protocol/comfoConnect.js';
 
 export const opcodes = {
     [Opcode.NO_OPERATION]: NullMessage,

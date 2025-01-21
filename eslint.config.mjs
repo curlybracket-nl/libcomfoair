@@ -16,14 +16,14 @@ export default tseslint.config(
   {
     extends: [...tseslint.configs.recommended],
 
-    files: ['**/*.ts', '**/*.mts'],
+    files: ['src/**/*.ts', 'src/**/*.mts'],
 
     plugins: {
       '@typescript-eslint': tseslint.plugin,
     },
 
     rules: {
-      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off'
     },
 
     languageOptions: {
@@ -41,7 +41,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['__tests__/**'],
+    files: ['src/__tests__/**'],
 
     plugins: {
       vitest,
@@ -49,6 +49,7 @@ export default tseslint.config(
 
     rules: {
       ...vitest.configs.recommended.rules,
+      '@typescript-eslint/no-explicit-any': 'off',
     },
 
     settings: {

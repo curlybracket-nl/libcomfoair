@@ -1,7 +1,7 @@
 import { ComfoControlClient } from './comfoControlClient.js';
 import { ComfoAirProperties } from './deviceProperties.js';
 import { ComfoControlServerInfo } from './discoveryOperation.js';
-import { Logger, ConsolePrinter, LogLevel } from './util/logging';
+import { Logger, ConsolePrinter, LogLevel } from './util/logging/index.js';
 
 Logger.getRoot().addPrinter(new ConsolePrinter()).setLogLevel(LogLevel.DEFAULT).setName('comfo-connect');
 

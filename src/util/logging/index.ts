@@ -1,3 +1,3 @@
-export * from './logLevel';
-export * from './logger';
-export * from './logPrinter';
+export * from './logLevel.js';
+export * from './logger.js';
+export * from './logPrinter.js';
