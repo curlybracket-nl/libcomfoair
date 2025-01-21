@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
 import { EventEmitter } from 'node:events';
 import { ComfoControlTransport } from '../comfoControlTransport';
-import { Opcode, StartSessionRequest, StartSessionConfirm, GatewayOperation } from '../protocol/comfoConnect';
+import { Opcode, StartSessionConfirm, GatewayOperation } from '../protocol/comfoConnect';
 import { Socket } from 'node:net';
 import { ComfoControlHeader } from '../comfoControlHeader';
 import { ComfoControlMessage } from '../comfoControlMessage';
@@ -31,7 +31,6 @@ describe('ComfoControlTransport', () => {
 
         transport = new ComfoControlTransport({
             address: '127.0.0.1',
-            port: 5678,
             uuid: '0123456789abcdef0123456789abcdef',
             clientUuid: 'fedcba9876543210fedcba9876543210',
         });
