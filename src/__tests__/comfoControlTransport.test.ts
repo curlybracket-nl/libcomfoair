@@ -36,7 +36,7 @@ describe('ComfoControlTransport', () => {
         });
     });
 
-    afterEach(() => {        
+    afterEach(() => {
         vi.restoreAllMocks();
     });
 
@@ -61,7 +61,7 @@ describe('ComfoControlTransport', () => {
         await transport.connect();
         mockSocket.write.mockImplementation((_buffer: Buffer, cb: any) => cb?.());
         const refId = await transport.send(Opcode.START_SESSION_REQUEST, { takeover: true });
-        
+
         expect(refId).toBe(1);
         expect(mockSocket.write).toHaveBeenCalled();
 
@@ -81,7 +81,7 @@ describe('ComfoControlTransport', () => {
     it('should handle receiving a data', async () => {
         await transport.connect();
         const msgAwaiter = new Promise<ComfoControlMessage>((resolve) => {
-            transport.on('message', (msg) => resolve(msg))
+            transport.on('message', (msg) => resolve(msg));
         });
 
         // Simulate incoming data
@@ -89,15 +89,17 @@ describe('ComfoControlTransport', () => {
         const operation = GatewayOperation.toBinary({ opcode: Opcode.START_SESSION_CONFIRM, id: 1 });
         const header = new ComfoControlHeader('0', '0', operation.length, message.length);
         mockSocket.emit('data', Buffer.concat([header.toBinary(), operation, message]));
-        
+
         // check msg
-        const msg = await msgAwaiter;        
+        const msg = await msgAwaiter;
         expect(msg.opcode).toBe(Opcode.START_SESSION_CONFIRM);
         const result = msg.deserialize<Opcode.START_SESSION_CONFIRM>();
         expect(result.resumed).toBe(false);
     });
 
     it('should throw error on send if not connected', async () => {
-        await expect(async () => transport.send(Opcode.START_SESSION_REQUEST, {})).rejects.toThrow('Cannot send data on a disconnected socket');
+        await expect(async () => transport.send(Opcode.START_SESSION_REQUEST, {})).rejects.toThrow(
+            'Cannot send data on a disconnected socket',
+        );
     });
 });

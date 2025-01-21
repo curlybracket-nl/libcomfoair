@@ -1,4 +1,3 @@
-
 import { describe, it, expect } from 'vitest';
 import { COMFO_MESSAGE_HEADER_LENGTH, ComfoControlHeader } from '../comfoControlHeader.js';
 
@@ -51,10 +50,7 @@ describe('ComfoControlHeader', () => {
 
     it('should parse operation', () => {
         const header = new ComfoControlHeader('sender', 'receiver', 4, 10);
-        const data = Buffer.concat([
-            Buffer.alloc(COMFO_MESSAGE_HEADER_LENGTH).fill(0), 
-            Buffer.from('08022002', 'hex')
-        ]);
+        const data = Buffer.concat([Buffer.alloc(COMFO_MESSAGE_HEADER_LENGTH).fill(0), Buffer.from('08022002', 'hex')]);
         expect(() => header.parseOperation(data)).not.toThrow();
     });
 

@@ -115,9 +115,7 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
     private sendDiscoveryMessages() {
         const message = GatewayDiscovery.toBinary({ request: {} });
         for (const address of this.broadcastAddresses) {
-            this.logger.debug(`Broadcast on ${address} (${this.port}):`, () =>
-                Buffer.from(message).toString('hex'),
-            );
+            this.logger.debug(`Broadcast on ${address} (${this.port}):`, () => Buffer.from(message).toString('hex'));
             this.socket.send(message, 0, message.length, this.port, address, (err) => err && this.onError(err));
         }
     }

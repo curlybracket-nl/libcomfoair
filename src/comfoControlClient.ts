@@ -314,7 +314,10 @@ export class ComfoControlClient {
      * @returns {Promise<void>} A promise that resolves when the property listener is successfully registered.
      * @throws Will throw an error if the request to register the property updates fails.
      */
-    public async registerPropertyListener<T extends DeviceProperty>(property: T, listener: DevicePropertyListner<T>): Promise<void> {
+    public async registerPropertyListener<T extends DeviceProperty>(
+        property: T,
+        listener: DevicePropertyListner<T>,
+    ): Promise<void> {
         if (!this.propertyListeners[property.propertyId]) {
             await this.requestPropertyUpdates(property);
             this.propertyListeners[property.propertyId] = [];

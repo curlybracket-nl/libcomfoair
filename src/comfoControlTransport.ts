@@ -45,10 +45,10 @@ enum ConnectionState {
  * - disconnect: emitted when the connection to the device is closed - the underlying socket is closed
  *
  */
-export class ComfoControlTransport extends EventEmitter< {
-    connect: [ ];
-    message: [ ComfoControlMessage ];
-    disconnect: [ ];
+export class ComfoControlTransport extends EventEmitter<{
+    connect: [];
+    message: [ComfoControlMessage];
+    disconnect: [];
 }> {
     private socket: Socket | null = null;
     private messageId: number = 0;

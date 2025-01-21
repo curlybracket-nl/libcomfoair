@@ -13,7 +13,7 @@ vi.mock('../comfoControlTransport', () => {
     transportMock.isConnecting = false;
     transportMock.id = 0;
     transportMock.messages = [];
-    transportMock.connect = vi.fn(async function (){
+    transportMock.connect = vi.fn(async function () {
         this.isConnected = true;
         this.emit('connect');
     });
@@ -23,7 +23,7 @@ vi.mock('../comfoControlTransport', () => {
         });
         return ++this.id;
     });
-    transportMock.disconnect = vi.fn(function (){
+    transportMock.disconnect = vi.fn(function () {
         this.isConnected = false;
     });
     return { ComfoControlTransport: vi.fn(() => transportMock) };
@@ -41,11 +41,14 @@ describe('ComfoControlClient', () => {
         mockTransport.id = 0;
         mockTransport.messages = [];
         logger = new Logger('TestLogger');
-        client = new ComfoControlClient({
-            address: '127.0.0.1',
-            uuid: '0123456789abcdef0123456789abcdef',
-            clientUuid: 'fedcba9876543210fedcba9876543210',
-        }, logger);
+        client = new ComfoControlClient(
+            {
+                address: '127.0.0.1',
+                uuid: '0123456789abcdef0123456789abcdef',
+                clientUuid: 'fedcba9876543210fedcba9876543210',
+            },
+            logger,
+        );
     });
 
     afterEach(() => {
@@ -55,7 +58,7 @@ describe('ComfoControlClient', () => {
     it('should start a session successfully', async () => {
         mockTransport.messages = [
             ComfoControlMessage.fromJson({ opcode: Opcode.REGISTER_DEVICE_CONFIRM, id: 1, result: Result.OK }),
-            ComfoControlMessage.fromJson({ opcode: Opcode.START_SESSION_CONFIRM, id: 2, result: Result.OK })
+            ComfoControlMessage.fromJson({ opcode: Opcode.START_SESSION_CONFIRM, id: 2, result: Result.OK }),
         ];
 
         await client.startSession();
@@ -69,7 +72,10 @@ describe('ComfoControlClient', () => {
         mockTransport.messages = [
             ComfoControlMessage.fromJson({ opcode: Opcode.REGISTER_DEVICE_CONFIRM, id: 1, result: Result.OK }),
             ComfoControlMessage.fromJson({ opcode: Opcode.START_SESSION_CONFIRM, id: 2, result: Result.OK }),
-            ComfoControlMessage.fromJson({ opcode: Opcode.CN_TIME_CONFIRM, id: 3, result: Result.OK }, { currentTime: 1234567890 })
+            ComfoControlMessage.fromJson(
+                { opcode: Opcode.CN_TIME_CONFIRM, id: 3, result: Result.OK },
+                { currentTime: 1234567890 },
+            ),
         ];
 
         const response = await client.send(Opcode.CN_TIME_REQUEST);
@@ -79,16 +85,19 @@ describe('ComfoControlClient', () => {
     });
 
     it('should get server time', async () => {
-        const baseTime = new Date(2000, 1, 1).getTime()
+        const baseTime = new Date(2000, 1, 1).getTime();
         const currentTime = Date.now();
         mockTransport.messages = [
             ComfoControlMessage.fromJson({ opcode: Opcode.REGISTER_DEVICE_CONFIRM, id: 1, result: Result.OK }),
             ComfoControlMessage.fromJson({ opcode: Opcode.START_SESSION_CONFIRM, id: 2, result: Result.OK }),
-            ComfoControlMessage.fromJson({ opcode: Opcode.CN_TIME_CONFIRM, id: 3, result: Result.OK }, { currentTime: Math.floor((Date.now() - baseTime) / 1000) })
+            ComfoControlMessage.fromJson(
+                { opcode: Opcode.CN_TIME_CONFIRM, id: 3, result: Result.OK },
+                { currentTime: Math.floor((Date.now() - baseTime) / 1000) },
+            ),
         ];
 
         const serverTime = await client.getServerTime();
-        
+
         expect(mockTransport.send).toHaveBeenCalledWith(Opcode.CN_TIME_REQUEST, expect.any(Object));
         expect(serverTime.getTime()).toBeCloseTo(Math.floor(currentTime / 1000) * 1000, -2);
     });
@@ -97,7 +106,7 @@ describe('ComfoControlClient', () => {
         mockTransport.messages = [
             ComfoControlMessage.fromJson({ opcode: Opcode.REGISTER_DEVICE_CONFIRM, id: 1, result: Result.OK }),
             ComfoControlMessage.fromJson({ opcode: Opcode.START_SESSION_CONFIRM, id: 2, result: Result.OK }),
-            ComfoControlMessage.fromJson({ opcode: Opcode.CN_RPDO_CONFIRM, id: 3, result: Result.OK })
+            ComfoControlMessage.fromJson({ opcode: Opcode.CN_RPDO_CONFIRM, id: 3, result: Result.OK }),
         ];
 
         const property: DeviceProperty = { propertyId: 1, dataType: 0 };
