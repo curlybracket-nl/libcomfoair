@@ -9,7 +9,7 @@ import tseslint from 'typescript-eslint';
 // You should change it to your needs following the documentation.
 export default tseslint.config(
   {
-    ignores: ['**/out/**', '**/tmp/**', '**/coverage/**', '**/src/protocol/**'],
+    ignores: ['**/dist/**', '**/tmp/**', '**/coverage/**', '**/src/protocol/**', 'test/**', 'node_modules/**'],
   },
   eslint.configs.recommended,
   // @ts-ignore

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { EventEmitter } from 'node:events';
-import { ComfoControlTransport } from '../comfoControlTransport.js';
-import { Opcode, StartSessionConfirm, GatewayOperation } from '../protocol/comfoConnect.js';
+import { ComfoControlTransport } from '../comfoControlTransport';
+import { Opcode, StartSessionConfirm, GatewayOperation } from '../protocol/comfoConnect';
 import { Socket } from 'node:net';
-import { ComfoControlHeader } from '../comfoControlHeader.js';
-import { ComfoControlMessage } from '../comfoControlMessage.js';
+import { ComfoControlHeader } from '../comfoControlHeader';
+import { ComfoControlMessage } from '../comfoControlMessage';
 
 vi.mock('node:net', () => {
     const socketMock = new EventEmitter() as Socket;

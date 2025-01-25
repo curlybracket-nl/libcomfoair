@@ -1,4 +1,4 @@
-import { GatewayOperation } from './protocol/comfoConnect.js';
+import { GatewayOperation } from './protocol/comfoConnect';
 
 /**
  * All ComfoAir messages start with a 38 byte header.

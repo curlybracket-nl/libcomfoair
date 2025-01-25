@@ -1,11 +1,11 @@
 import { Socket } from 'node:net';
 import { EventEmitter } from 'node:events';
-import { Logger } from './util/logging/index.js';
-import { ComfoControlMessage } from './comfoControlMessage.js';
-import { Opcode, GatewayOperation } from './protocol/comfoConnect.js';
-import { opcodes } from './opcodes.js';
-import { CLIENT_UUID, GATEWAY_PORT } from './consts.js';
-import { ComfoControlHeader } from './comfoControlHeader.js';
+import { Logger } from './util/logging/index';
+import { ComfoControlMessage } from './comfoControlMessage';
+import { Opcode, GatewayOperation } from './protocol/comfoConnect';
+import { OpcodeMessageType, opcodes } from './opcodes';
+import { CLIENT_UUID, GATEWAY_PORT } from './consts';
+import { ComfoControlHeader } from './comfoControlHeader';
 
 export interface ComfoControlTransportOptions {
     /**
@@ -134,9 +134,9 @@ export class ComfoControlTransport extends EventEmitter<{
         });
     }
 
-    public send<T extends keyof typeof opcodes, TRequest extends ReturnType<(typeof opcodes)[T]['create']>>(
+    public send<T extends keyof typeof opcodes>(
         opcode: T,
-        data: TRequest,
+        data: OpcodeMessageType<T>,
     ): Promise<number> {
         if (this.state !== ConnectionState.CONNECTED || this.socket === null) {
             throw new Error(
@@ -169,10 +169,10 @@ export class ComfoControlTransport extends EventEmitter<{
         });
     }
 
-    private prepareMessage<T extends keyof typeof opcodes, TRequest extends ReturnType<(typeof opcodes)[T]['create']>>(
+    private prepareMessage<T extends keyof typeof opcodes>(
         opcode: T,
         id: number,
-        data: TRequest,
+        data: OpcodeMessageType<T>,
     ): Buffer {
         if (!opcodes[opcode]) {
             throw new Error(`Unsupported opcode: ${Opcode[opcode]}`);

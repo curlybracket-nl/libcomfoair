@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "target": "ES2024",
-    "module": "Node16",
+    "module": "CommonJS",
     "lib": [ "ES2022", "DOM" ],
-    "moduleResolution": "node16",
-    "rootDir": ".",
-    "outDir": "out",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "outDir": "dist",
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
     "importHelpers": true,
     "alwaysStrict": true,
     "sourceMap": true,
@@ -18,7 +19,7 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "strictNullChecks": true,
-    "skipLibCheck": false
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

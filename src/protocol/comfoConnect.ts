@@ -2,15 +2,15 @@
 // @generated from protobuf file "comfoConnect.proto" (syntax proto3)
 // tslint:disable
 // @ts-nocheck
-import type { BinaryWriteOptions } from '@protobuf-ts/runtime';
-import type { IBinaryWriter } from '@protobuf-ts/runtime';
-import { WireType } from '@protobuf-ts/runtime';
-import type { BinaryReadOptions } from '@protobuf-ts/runtime';
-import type { IBinaryReader } from '@protobuf-ts/runtime';
-import { UnknownFieldHandler } from '@protobuf-ts/runtime';
-import type { PartialMessage } from '@protobuf-ts/runtime';
-import { reflectionMergePartial } from '@protobuf-ts/runtime';
-import { MessageType } from '@protobuf-ts/runtime';
+import type { BinaryWriteOptions } from "@protobuf-ts/runtime";
+import type { IBinaryWriter } from "@protobuf-ts/runtime";
+import { WireType } from "@protobuf-ts/runtime";
+import type { BinaryReadOptions } from "@protobuf-ts/runtime";
+import type { IBinaryReader } from "@protobuf-ts/runtime";
+import { UnknownFieldHandler } from "@protobuf-ts/runtime";
+import type { PartialMessage } from "@protobuf-ts/runtime";
+import { reflectionMergePartial } from "@protobuf-ts/runtime";
+import { MessageType } from "@protobuf-ts/runtime";
 /**
  * @generated from protobuf message GatewayDiscovery
  */
@@ -27,7 +27,8 @@ export interface GatewayDiscovery {
 /**
  * @generated from protobuf message GatewayDiscovery.Request
  */
-export interface GatewayDiscovery_Request {}
+export interface GatewayDiscovery_Request {
+}
 /**
  * @generated from protobuf message GatewayDiscovery.Response
  */
@@ -145,7 +146,7 @@ export enum CnNodeNotification_NodeModeType {
     /**
      * @generated from protobuf enum value: NODE_UPDATE = 3;
      */
-    NODE_UPDATE = 3,
+    NODE_UPDATE = 3
 }
 /**
  * @generated from protobuf message CnAlarmNotification
@@ -317,7 +318,8 @@ export interface CnRmiAsyncResponse {
 /**
  * @generated from protobuf message NullMessage
  */
-export interface NullMessage {}
+export interface NullMessage {
+}
 /**
  * @generated from protobuf enum Opcode
  */
@@ -581,7 +583,7 @@ export enum Opcode {
     /**
      * @generated from protobuf enum value: CN_FUP_RESET_CONFIRM = 81;
      */
-    CN_FUP_RESET_CONFIRM = 81,
+    CN_FUP_RESET_CONFIRM = 81
 }
 /**
  * @generated from protobuf enum Result
@@ -622,54 +624,37 @@ export enum Result {
     /**
      * @generated from protobuf enum value: RMI_ERROR = 8;
      */
-    RMI_ERROR = 8,
+    RMI_ERROR = 8
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class GatewayDiscovery$Type extends MessageType<GatewayDiscovery> {
     constructor() {
-        super('GatewayDiscovery', [
-            { no: 1, name: 'request', kind: 'message', T: () => GatewayDiscovery_Request },
-            { no: 2, name: 'response', kind: 'message', T: () => GatewayDiscovery_Response },
+        super("GatewayDiscovery", [
+            { no: 1, name: "request", kind: "message", T: () => GatewayDiscovery_Request },
+            { no: 2, name: "response", kind: "message", T: () => GatewayDiscovery_Response }
         ]);
     }
     create(value?: PartialMessage<GatewayDiscovery>): GatewayDiscovery {
-        const message = globalThis.Object.create(this.messagePrototype!);
-        if (value !== undefined) reflectionMergePartial<GatewayDiscovery>(this, message, value);
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<GatewayDiscovery>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: GatewayDiscovery,
-    ): GatewayDiscovery {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GatewayDiscovery): GatewayDiscovery {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
                 case /* GatewayDiscovery.Request request */ 1:
-                    message.request = GatewayDiscovery_Request.internalBinaryRead(
-                        reader,
-                        reader.uint32(),
-                        options,
-                        message.request,
-                    );
+                    message.request = GatewayDiscovery_Request.internalBinaryRead(reader, reader.uint32(), options, message.request);
                     break;
                 case /* GatewayDiscovery.Response response */ 2:
-                    message.response = GatewayDiscovery_Response.internalBinaryRead(
-                        reader,
-                        reader.uint32(),
-                        options,
-                        message.response,
-                    );
+                    message.response = GatewayDiscovery_Response.internalBinaryRead(reader, reader.uint32(), options, message.response);
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -680,20 +665,13 @@ class GatewayDiscovery$Type extends MessageType<GatewayDiscovery> {
     internalBinaryWrite(message: GatewayDiscovery, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* GatewayDiscovery.Request request = 1; */
         if (message.request)
-            GatewayDiscovery_Request.internalBinaryWrite(
-                message.request,
-                writer.tag(1, WireType.LengthDelimited).fork(),
-                options,
-            ).join();
+            GatewayDiscovery_Request.internalBinaryWrite(message.request, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
         /* GatewayDiscovery.Response response = 2; */
         if (message.response)
-            GatewayDiscovery_Response.internalBinaryWrite(
-                message.response,
-                writer.tag(2, WireType.LengthDelimited).fork(),
-                options,
-            ).join();
+            GatewayDiscovery_Response.internalBinaryWrite(message.response, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -704,28 +682,21 @@ export const GatewayDiscovery = new GatewayDiscovery$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class GatewayDiscovery_Request$Type extends MessageType<GatewayDiscovery_Request> {
     constructor() {
-        super('GatewayDiscovery.Request', []);
+        super("GatewayDiscovery.Request", []);
     }
     create(value?: PartialMessage<GatewayDiscovery_Request>): GatewayDiscovery_Request {
-        const message = globalThis.Object.create(this.messagePrototype!);
-        if (value !== undefined) reflectionMergePartial<GatewayDiscovery_Request>(this, message, value);
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<GatewayDiscovery_Request>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: GatewayDiscovery_Request,
-    ): GatewayDiscovery_Request {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GatewayDiscovery_Request): GatewayDiscovery_Request {
         return target ?? this.create();
     }
-    internalBinaryWrite(
-        message: GatewayDiscovery_Request,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: GatewayDiscovery_Request, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -736,28 +707,23 @@ export const GatewayDiscovery_Request = new GatewayDiscovery_Request$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class GatewayDiscovery_Response$Type extends MessageType<GatewayDiscovery_Response> {
     constructor() {
-        super('GatewayDiscovery.Response', [
-            { no: 1, name: 'address', kind: 'scalar', T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: 'uuid', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
-            { no: 3, name: 'version', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
+        super("GatewayDiscovery.Response", [
+            { no: 1, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "uuid", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 3, name: "version", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<GatewayDiscovery_Response>): GatewayDiscovery_Response {
-        const message = globalThis.Object.create(this.messagePrototype!);
-        message.address = '';
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.address = "";
         message.uuid = new Uint8Array(0);
         message.version = 0;
-        if (value !== undefined) reflectionMergePartial<GatewayDiscovery_Response>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<GatewayDiscovery_Response>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: GatewayDiscovery_Response,
-    ): GatewayDiscovery_Response {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GatewayDiscovery_Response): GatewayDiscovery_Response {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -772,10 +738,8 @@ class GatewayDiscovery_Response$Type extends MessageType<GatewayDiscovery_Respon
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -783,19 +747,19 @@ class GatewayDiscovery_Response$Type extends MessageType<GatewayDiscovery_Respon
         }
         return message;
     }
-    internalBinaryWrite(
-        message: GatewayDiscovery_Response,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: GatewayDiscovery_Response, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string address = 1; */
-        if (message.address !== '') writer.tag(1, WireType.LengthDelimited).string(message.address);
+        if (message.address !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.address);
         /* bytes uuid = 2; */
-        if (message.uuid.length) writer.tag(2, WireType.LengthDelimited).bytes(message.uuid);
+        if (message.uuid.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.uuid);
         /* uint32 version = 3; */
-        if (message.version !== 0) writer.tag(3, WireType.Varint).uint32(message.version);
+        if (message.version !== 0)
+            writer.tag(3, WireType.Varint).uint32(message.version);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -806,28 +770,23 @@ export const GatewayDiscovery_Response = new GatewayDiscovery_Response$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class GatewayOperation$Type extends MessageType<GatewayOperation> {
     constructor() {
-        super('GatewayOperation', [
-            { no: 1, name: 'opcode', kind: 'enum', T: () => ['Opcode', Opcode] },
-            { no: 2, name: 'result', kind: 'enum', opt: true, T: () => ['Result', Result] },
-            { no: 3, name: 'description', kind: 'scalar', opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: 'id', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
+        super("GatewayOperation", [
+            { no: 1, name: "opcode", kind: "enum", T: () => ["Opcode", Opcode] },
+            { no: 2, name: "result", kind: "enum", opt: true, T: () => ["Result", Result] },
+            { no: 3, name: "description", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "id", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<GatewayOperation>): GatewayOperation {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.opcode = 0;
         message.id = 0;
-        if (value !== undefined) reflectionMergePartial<GatewayOperation>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<GatewayOperation>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: GatewayOperation,
-    ): GatewayOperation {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GatewayOperation): GatewayOperation {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -845,10 +804,8 @@ class GatewayOperation$Type extends MessageType<GatewayOperation> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -858,15 +815,20 @@ class GatewayOperation$Type extends MessageType<GatewayOperation> {
     }
     internalBinaryWrite(message: GatewayOperation, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* Opcode opcode = 1; */
-        if (message.opcode !== 0) writer.tag(1, WireType.Varint).int32(message.opcode);
+        if (message.opcode !== 0)
+            writer.tag(1, WireType.Varint).int32(message.opcode);
         /* optional Result result = 2; */
-        if (message.result !== undefined) writer.tag(2, WireType.Varint).int32(message.result);
+        if (message.result !== undefined)
+            writer.tag(2, WireType.Varint).int32(message.result);
         /* optional string description = 3; */
-        if (message.description !== undefined) writer.tag(3, WireType.LengthDelimited).string(message.description);
+        if (message.description !== undefined)
+            writer.tag(3, WireType.LengthDelimited).string(message.description);
         /* uint32 id = 4; */
-        if (message.id !== 0) writer.tag(4, WireType.Varint).uint32(message.id);
+        if (message.id !== 0)
+            writer.tag(4, WireType.Varint).uint32(message.id);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -877,27 +839,22 @@ export const GatewayOperation = new GatewayOperation$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class RegisterDeviceRequest$Type extends MessageType<RegisterDeviceRequest> {
     constructor() {
-        super('RegisterDeviceRequest', [
-            { no: 1, name: 'uuid', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
-            { no: 2, name: 'pin', kind: 'scalar', opt: true, T: 13 /*ScalarType.UINT32*/ },
-            { no: 3, name: 'deviceName', kind: 'scalar', T: 9 /*ScalarType.STRING*/ },
+        super("RegisterDeviceRequest", [
+            { no: 1, name: "uuid", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 2, name: "pin", kind: "scalar", opt: true, T: 13 /*ScalarType.UINT32*/ },
+            { no: 3, name: "deviceName", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<RegisterDeviceRequest>): RegisterDeviceRequest {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.uuid = new Uint8Array(0);
-        message.deviceName = '';
-        if (value !== undefined) reflectionMergePartial<RegisterDeviceRequest>(this, message, value);
+        message.deviceName = "";
+        if (value !== undefined)
+            reflectionMergePartial<RegisterDeviceRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: RegisterDeviceRequest,
-    ): RegisterDeviceRequest {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RegisterDeviceRequest): RegisterDeviceRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -912,10 +869,8 @@ class RegisterDeviceRequest$Type extends MessageType<RegisterDeviceRequest> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -923,19 +878,19 @@ class RegisterDeviceRequest$Type extends MessageType<RegisterDeviceRequest> {
         }
         return message;
     }
-    internalBinaryWrite(
-        message: RegisterDeviceRequest,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: RegisterDeviceRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* bytes uuid = 1; */
-        if (message.uuid.length) writer.tag(1, WireType.LengthDelimited).bytes(message.uuid);
+        if (message.uuid.length)
+            writer.tag(1, WireType.LengthDelimited).bytes(message.uuid);
         /* optional uint32 pin = 2; */
-        if (message.pin !== undefined) writer.tag(2, WireType.Varint).uint32(message.pin);
+        if (message.pin !== undefined)
+            writer.tag(2, WireType.Varint).uint32(message.pin);
         /* string deviceName = 3; */
-        if (message.deviceName !== '') writer.tag(3, WireType.LengthDelimited).string(message.deviceName);
+        if (message.deviceName !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.deviceName);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -946,23 +901,18 @@ export const RegisterDeviceRequest = new RegisterDeviceRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
     constructor() {
-        super('StartSessionRequest', [
-            { no: 1, name: 'takeover', kind: 'scalar', opt: true, T: 8 /*ScalarType.BOOL*/ },
+        super("StartSessionRequest", [
+            { no: 1, name: "takeover", kind: "scalar", opt: true, T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<StartSessionRequest>): StartSessionRequest {
-        const message = globalThis.Object.create(this.messagePrototype!);
-        if (value !== undefined) reflectionMergePartial<StartSessionRequest>(this, message, value);
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<StartSessionRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: StartSessionRequest,
-    ): StartSessionRequest {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StartSessionRequest): StartSessionRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -971,10 +921,8 @@ class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -982,15 +930,13 @@ class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
         }
         return message;
     }
-    internalBinaryWrite(
-        message: StartSessionRequest,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: StartSessionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* optional bool takeover = 1; */
-        if (message.takeover !== undefined) writer.tag(1, WireType.Varint).bool(message.takeover);
+        if (message.takeover !== undefined)
+            writer.tag(1, WireType.Varint).bool(message.takeover);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1001,26 +947,21 @@ export const StartSessionRequest = new StartSessionRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class StartSessionConfirm$Type extends MessageType<StartSessionConfirm> {
     constructor() {
-        super('StartSessionConfirm', [
-            { no: 1, name: 'deviceName', kind: 'scalar', T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: 'resumed', kind: 'scalar', T: 8 /*ScalarType.BOOL*/ },
+        super("StartSessionConfirm", [
+            { no: 1, name: "deviceName", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "resumed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<StartSessionConfirm>): StartSessionConfirm {
-        const message = globalThis.Object.create(this.messagePrototype!);
-        message.deviceName = '';
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.deviceName = "";
         message.resumed = false;
-        if (value !== undefined) reflectionMergePartial<StartSessionConfirm>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<StartSessionConfirm>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: StartSessionConfirm,
-    ): StartSessionConfirm {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StartSessionConfirm): StartSessionConfirm {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1032,10 +973,8 @@ class StartSessionConfirm$Type extends MessageType<StartSessionConfirm> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1043,17 +982,16 @@ class StartSessionConfirm$Type extends MessageType<StartSessionConfirm> {
         }
         return message;
     }
-    internalBinaryWrite(
-        message: StartSessionConfirm,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: StartSessionConfirm, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string deviceName = 1; */
-        if (message.deviceName !== '') writer.tag(1, WireType.LengthDelimited).string(message.deviceName);
+        if (message.deviceName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.deviceName);
         /* bool resumed = 2; */
-        if (message.resumed !== false) writer.tag(2, WireType.Varint).bool(message.resumed);
+        if (message.resumed !== false)
+            writer.tag(2, WireType.Varint).bool(message.resumed);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1064,35 +1002,25 @@ export const StartSessionConfirm = new StartSessionConfirm$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnNodeNotification$Type extends MessageType<CnNodeNotification> {
     constructor() {
-        super('CnNodeNotification', [
-            { no: 1, name: 'nodeId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'productId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 3, name: 'zoneId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            {
-                no: 4,
-                name: 'mode',
-                kind: 'enum',
-                T: () => ['CnNodeNotification.NodeModeType', CnNodeNotification_NodeModeType],
-            },
+        super("CnNodeNotification", [
+            { no: 1, name: "nodeId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "productId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 3, name: "zoneId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 4, name: "mode", kind: "enum", T: () => ["CnNodeNotification.NodeModeType", CnNodeNotification_NodeModeType] }
         ]);
     }
     create(value?: PartialMessage<CnNodeNotification>): CnNodeNotification {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.nodeId = 0;
         message.productId = 0;
         message.zoneId = 0;
         message.mode = 0;
-        if (value !== undefined) reflectionMergePartial<CnNodeNotification>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnNodeNotification>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnNodeNotification,
-    ): CnNodeNotification {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnNodeNotification): CnNodeNotification {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1110,10 +1038,8 @@ class CnNodeNotification$Type extends MessageType<CnNodeNotification> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1121,21 +1047,22 @@ class CnNodeNotification$Type extends MessageType<CnNodeNotification> {
         }
         return message;
     }
-    internalBinaryWrite(
-        message: CnNodeNotification,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: CnNodeNotification, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 nodeId = 1; */
-        if (message.nodeId !== 0) writer.tag(1, WireType.Varint).uint32(message.nodeId);
+        if (message.nodeId !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.nodeId);
         /* uint32 productId = 2; */
-        if (message.productId !== 0) writer.tag(2, WireType.Varint).uint32(message.productId);
+        if (message.productId !== 0)
+            writer.tag(2, WireType.Varint).uint32(message.productId);
         /* uint32 zoneId = 3; */
-        if (message.zoneId !== 0) writer.tag(3, WireType.Varint).uint32(message.zoneId);
+        if (message.zoneId !== 0)
+            writer.tag(3, WireType.Varint).uint32(message.zoneId);
         /* CnNodeNotification.NodeModeType mode = 4; */
-        if (message.mode !== 0) writer.tag(4, WireType.Varint).int32(message.mode);
+        if (message.mode !== 0)
+            writer.tag(4, WireType.Varint).int32(message.mode);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1146,38 +1073,33 @@ export const CnNodeNotification = new CnNodeNotification$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnAlarmNotification$Type extends MessageType<CnAlarmNotification> {
     constructor() {
-        super('CnAlarmNotification', [
-            { no: 1, name: 'zone', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'productId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 3, name: 'productVariant', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 4, name: 'serialNumber', kind: 'scalar', T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: 'swProgramVersion', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 6, name: 'errors', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
-            { no: 7, name: 'errorId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 8, name: 'nodeId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
+        super("CnAlarmNotification", [
+            { no: 1, name: "zone", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "productId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 3, name: "productVariant", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 4, name: "serialNumber", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "swProgramVersion", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 6, name: "errors", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 7, name: "errorId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 8, name: "nodeId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<CnAlarmNotification>): CnAlarmNotification {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.zone = 0;
         message.productId = 0;
         message.productVariant = 0;
-        message.serialNumber = '';
+        message.serialNumber = "";
         message.swProgramVersion = 0;
         message.errors = new Uint8Array(0);
         message.errorId = 0;
         message.nodeId = 0;
-        if (value !== undefined) reflectionMergePartial<CnAlarmNotification>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnAlarmNotification>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnAlarmNotification,
-    ): CnAlarmNotification {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnAlarmNotification): CnAlarmNotification {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1207,10 +1129,8 @@ class CnAlarmNotification$Type extends MessageType<CnAlarmNotification> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1218,29 +1138,34 @@ class CnAlarmNotification$Type extends MessageType<CnAlarmNotification> {
         }
         return message;
     }
-    internalBinaryWrite(
-        message: CnAlarmNotification,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: CnAlarmNotification, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 zone = 1; */
-        if (message.zone !== 0) writer.tag(1, WireType.Varint).uint32(message.zone);
+        if (message.zone !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.zone);
         /* uint32 productId = 2; */
-        if (message.productId !== 0) writer.tag(2, WireType.Varint).uint32(message.productId);
+        if (message.productId !== 0)
+            writer.tag(2, WireType.Varint).uint32(message.productId);
         /* uint32 productVariant = 3; */
-        if (message.productVariant !== 0) writer.tag(3, WireType.Varint).uint32(message.productVariant);
+        if (message.productVariant !== 0)
+            writer.tag(3, WireType.Varint).uint32(message.productVariant);
         /* string serialNumber = 4; */
-        if (message.serialNumber !== '') writer.tag(4, WireType.LengthDelimited).string(message.serialNumber);
+        if (message.serialNumber !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.serialNumber);
         /* uint32 swProgramVersion = 5; */
-        if (message.swProgramVersion !== 0) writer.tag(5, WireType.Varint).uint32(message.swProgramVersion);
+        if (message.swProgramVersion !== 0)
+            writer.tag(5, WireType.Varint).uint32(message.swProgramVersion);
         /* bytes errors = 6; */
-        if (message.errors.length) writer.tag(6, WireType.LengthDelimited).bytes(message.errors);
+        if (message.errors.length)
+            writer.tag(6, WireType.LengthDelimited).bytes(message.errors);
         /* uint32 errorId = 7; */
-        if (message.errorId !== 0) writer.tag(7, WireType.Varint).uint32(message.errorId);
+        if (message.errorId !== 0)
+            writer.tag(7, WireType.Varint).uint32(message.errorId);
         /* uint32 nodeId = 8; */
-        if (message.nodeId !== 0) writer.tag(8, WireType.Varint).uint32(message.nodeId);
+        if (message.nodeId !== 0)
+            writer.tag(8, WireType.Varint).uint32(message.nodeId);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1251,28 +1176,23 @@ export const CnAlarmNotification = new CnAlarmNotification$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class VersionConfirm$Type extends MessageType<VersionConfirm> {
     constructor() {
-        super('VersionConfirm', [
-            { no: 1, name: 'gatewayVersion', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'serialNumber', kind: 'scalar', T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: 'comfoNetVersion', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
+        super("VersionConfirm", [
+            { no: 1, name: "gatewayVersion", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "serialNumber", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "comfoNetVersion", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<VersionConfirm>): VersionConfirm {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.gatewayVersion = 0;
-        message.serialNumber = '';
+        message.serialNumber = "";
         message.comfoNetVersion = 0;
-        if (value !== undefined) reflectionMergePartial<VersionConfirm>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<VersionConfirm>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: VersionConfirm,
-    ): VersionConfirm {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: VersionConfirm): VersionConfirm {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1287,10 +1207,8 @@ class VersionConfirm$Type extends MessageType<VersionConfirm> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1300,13 +1218,17 @@ class VersionConfirm$Type extends MessageType<VersionConfirm> {
     }
     internalBinaryWrite(message: VersionConfirm, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 gatewayVersion = 1; */
-        if (message.gatewayVersion !== 0) writer.tag(1, WireType.Varint).uint32(message.gatewayVersion);
+        if (message.gatewayVersion !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.gatewayVersion);
         /* string serialNumber = 2; */
-        if (message.serialNumber !== '') writer.tag(2, WireType.LengthDelimited).string(message.serialNumber);
+        if (message.serialNumber !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.serialNumber);
         /* uint32 comfoNetVersion = 3; */
-        if (message.comfoNetVersion !== 0) writer.tag(3, WireType.Varint).uint32(message.comfoNetVersion);
+        if (message.comfoNetVersion !== 0)
+            writer.tag(3, WireType.Varint).uint32(message.comfoNetVersion);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1317,21 +1239,18 @@ export const VersionConfirm = new VersionConfirm$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnTimeRequest$Type extends MessageType<CnTimeRequest> {
     constructor() {
-        super('CnTimeRequest', [{ no: 1, name: 'setTime', kind: 'scalar', opt: true, T: 13 /*ScalarType.UINT32*/ }]);
+        super("CnTimeRequest", [
+            { no: 1, name: "setTime", kind: "scalar", opt: true, T: 13 /*ScalarType.UINT32*/ }
+        ]);
     }
     create(value?: PartialMessage<CnTimeRequest>): CnTimeRequest {
-        const message = globalThis.Object.create(this.messagePrototype!);
-        if (value !== undefined) reflectionMergePartial<CnTimeRequest>(this, message, value);
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<CnTimeRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnTimeRequest,
-    ): CnTimeRequest {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnTimeRequest): CnTimeRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1340,10 +1259,8 @@ class CnTimeRequest$Type extends MessageType<CnTimeRequest> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1353,9 +1270,11 @@ class CnTimeRequest$Type extends MessageType<CnTimeRequest> {
     }
     internalBinaryWrite(message: CnTimeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* optional uint32 setTime = 1; */
-        if (message.setTime !== undefined) writer.tag(1, WireType.Varint).uint32(message.setTime);
+        if (message.setTime !== undefined)
+            writer.tag(1, WireType.Varint).uint32(message.setTime);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1366,22 +1285,19 @@ export const CnTimeRequest = new CnTimeRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnTimeConfirm$Type extends MessageType<CnTimeConfirm> {
     constructor() {
-        super('CnTimeConfirm', [{ no: 1, name: 'currentTime', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ }]);
+        super("CnTimeConfirm", [
+            { no: 1, name: "currentTime", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
     }
     create(value?: PartialMessage<CnTimeConfirm>): CnTimeConfirm {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.currentTime = 0;
-        if (value !== undefined) reflectionMergePartial<CnTimeConfirm>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnTimeConfirm>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnTimeConfirm,
-    ): CnTimeConfirm {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnTimeConfirm): CnTimeConfirm {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1390,10 +1306,8 @@ class CnTimeConfirm$Type extends MessageType<CnTimeConfirm> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1403,9 +1317,11 @@ class CnTimeConfirm$Type extends MessageType<CnTimeConfirm> {
     }
     internalBinaryWrite(message: CnTimeConfirm, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 currentTime = 1; */
-        if (message.currentTime !== 0) writer.tag(1, WireType.Varint).uint32(message.currentTime);
+        if (message.currentTime !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.currentTime);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1416,28 +1332,23 @@ export const CnTimeConfirm = new CnTimeConfirm$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnRpdoRequest$Type extends MessageType<CnRpdoRequest> {
     constructor() {
-        super('CnRpdoRequest', [
-            { no: 1, name: 'pdid', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'zone', kind: 'scalar', opt: true, T: 13 /*ScalarType.UINT32*/ },
-            { no: 3, name: 'type', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 4, name: 'timeout', kind: 'scalar', opt: true, T: 13 /*ScalarType.UINT32*/ },
+        super("CnRpdoRequest", [
+            { no: 1, name: "pdid", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "zone", kind: "scalar", opt: true, T: 13 /*ScalarType.UINT32*/ },
+            { no: 3, name: "type", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 4, name: "timeout", kind: "scalar", opt: true, T: 13 /*ScalarType.UINT32*/ }
         ]);
     }
     create(value?: PartialMessage<CnRpdoRequest>): CnRpdoRequest {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.pdid = 0;
         message.type = 0;
-        if (value !== undefined) reflectionMergePartial<CnRpdoRequest>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnRpdoRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnRpdoRequest,
-    ): CnRpdoRequest {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnRpdoRequest): CnRpdoRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1455,10 +1366,8 @@ class CnRpdoRequest$Type extends MessageType<CnRpdoRequest> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1468,15 +1377,20 @@ class CnRpdoRequest$Type extends MessageType<CnRpdoRequest> {
     }
     internalBinaryWrite(message: CnRpdoRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 pdid = 1; */
-        if (message.pdid !== 0) writer.tag(1, WireType.Varint).uint32(message.pdid);
+        if (message.pdid !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.pdid);
         /* optional uint32 zone = 2; */
-        if (message.zone !== undefined) writer.tag(2, WireType.Varint).uint32(message.zone);
+        if (message.zone !== undefined)
+            writer.tag(2, WireType.Varint).uint32(message.zone);
         /* uint32 type = 3; */
-        if (message.type !== 0) writer.tag(3, WireType.Varint).uint32(message.type);
+        if (message.type !== 0)
+            writer.tag(3, WireType.Varint).uint32(message.type);
         /* optional uint32 timeout = 4; */
-        if (message.timeout !== undefined) writer.tag(4, WireType.Varint).uint32(message.timeout);
+        if (message.timeout !== undefined)
+            writer.tag(4, WireType.Varint).uint32(message.timeout);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1487,26 +1401,21 @@ export const CnRpdoRequest = new CnRpdoRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnRpdoNotification$Type extends MessageType<CnRpdoNotification> {
     constructor() {
-        super('CnRpdoNotification', [
-            { no: 1, name: 'pdid', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'data', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
+        super("CnRpdoNotification", [
+            { no: 1, name: "pdid", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "data", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<CnRpdoNotification>): CnRpdoNotification {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.pdid = 0;
         message.data = new Uint8Array(0);
-        if (value !== undefined) reflectionMergePartial<CnRpdoNotification>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnRpdoNotification>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnRpdoNotification,
-    ): CnRpdoNotification {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnRpdoNotification): CnRpdoNotification {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1518,10 +1427,8 @@ class CnRpdoNotification$Type extends MessageType<CnRpdoNotification> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1529,17 +1436,16 @@ class CnRpdoNotification$Type extends MessageType<CnRpdoNotification> {
         }
         return message;
     }
-    internalBinaryWrite(
-        message: CnRpdoNotification,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: CnRpdoNotification, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 pdid = 1; */
-        if (message.pdid !== 0) writer.tag(1, WireType.Varint).uint32(message.pdid);
+        if (message.pdid !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.pdid);
         /* bytes data = 2; */
-        if (message.data.length) writer.tag(2, WireType.LengthDelimited).bytes(message.data);
+        if (message.data.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.data);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1550,26 +1456,21 @@ export const CnRpdoNotification = new CnRpdoNotification$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnRmiRequest$Type extends MessageType<CnRmiRequest> {
     constructor() {
-        super('CnRmiRequest', [
-            { no: 1, name: 'nodeId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'message', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
+        super("CnRmiRequest", [
+            { no: 1, name: "nodeId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "message", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<CnRmiRequest>): CnRmiRequest {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.nodeId = 0;
         message.message = new Uint8Array(0);
-        if (value !== undefined) reflectionMergePartial<CnRmiRequest>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnRmiRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnRmiRequest,
-    ): CnRmiRequest {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnRmiRequest): CnRmiRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1581,10 +1482,8 @@ class CnRmiRequest$Type extends MessageType<CnRmiRequest> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1594,11 +1493,14 @@ class CnRmiRequest$Type extends MessageType<CnRmiRequest> {
     }
     internalBinaryWrite(message: CnRmiRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 nodeId = 1; */
-        if (message.nodeId !== 0) writer.tag(1, WireType.Varint).uint32(message.nodeId);
+        if (message.nodeId !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.nodeId);
         /* bytes message = 2; */
-        if (message.message.length) writer.tag(2, WireType.LengthDelimited).bytes(message.message);
+        if (message.message.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.message);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1609,26 +1511,21 @@ export const CnRmiRequest = new CnRmiRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnRmiResponse$Type extends MessageType<CnRmiResponse> {
     constructor() {
-        super('CnRmiResponse', [
-            { no: 1, name: 'result', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'message', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
+        super("CnRmiResponse", [
+            { no: 1, name: "result", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "message", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<CnRmiResponse>): CnRmiResponse {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.result = 0;
         message.message = new Uint8Array(0);
-        if (value !== undefined) reflectionMergePartial<CnRmiResponse>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnRmiResponse>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnRmiResponse,
-    ): CnRmiResponse {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnRmiResponse): CnRmiResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1640,10 +1537,8 @@ class CnRmiResponse$Type extends MessageType<CnRmiResponse> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1653,11 +1548,14 @@ class CnRmiResponse$Type extends MessageType<CnRmiResponse> {
     }
     internalBinaryWrite(message: CnRmiResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 result = 1; */
-        if (message.result !== 0) writer.tag(1, WireType.Varint).uint32(message.result);
+        if (message.result !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.result);
         /* bytes message = 2; */
-        if (message.message.length) writer.tag(2, WireType.LengthDelimited).bytes(message.message);
+        if (message.message.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.message);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1668,26 +1566,21 @@ export const CnRmiResponse = new CnRmiResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnRmiAsyncRequest$Type extends MessageType<CnRmiAsyncRequest> {
     constructor() {
-        super('CnRmiAsyncRequest', [
-            { no: 1, name: 'nodeId', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'message', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
+        super("CnRmiAsyncRequest", [
+            { no: 1, name: "nodeId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "message", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<CnRmiAsyncRequest>): CnRmiAsyncRequest {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.nodeId = 0;
         message.message = new Uint8Array(0);
-        if (value !== undefined) reflectionMergePartial<CnRmiAsyncRequest>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnRmiAsyncRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnRmiAsyncRequest,
-    ): CnRmiAsyncRequest {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnRmiAsyncRequest): CnRmiAsyncRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1699,10 +1592,8 @@ class CnRmiAsyncRequest$Type extends MessageType<CnRmiAsyncRequest> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1712,11 +1603,14 @@ class CnRmiAsyncRequest$Type extends MessageType<CnRmiAsyncRequest> {
     }
     internalBinaryWrite(message: CnRmiAsyncRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 nodeId = 1; */
-        if (message.nodeId !== 0) writer.tag(1, WireType.Varint).uint32(message.nodeId);
+        if (message.nodeId !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.nodeId);
         /* bytes message = 2; */
-        if (message.message.length) writer.tag(2, WireType.LengthDelimited).bytes(message.message);
+        if (message.message.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.message);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1727,22 +1621,19 @@ export const CnRmiAsyncRequest = new CnRmiAsyncRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnRmiAsyncConfirm$Type extends MessageType<CnRmiAsyncConfirm> {
     constructor() {
-        super('CnRmiAsyncConfirm', [{ no: 1, name: 'result', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ }]);
+        super("CnRmiAsyncConfirm", [
+            { no: 1, name: "result", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
     }
     create(value?: PartialMessage<CnRmiAsyncConfirm>): CnRmiAsyncConfirm {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.result = 0;
-        if (value !== undefined) reflectionMergePartial<CnRmiAsyncConfirm>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnRmiAsyncConfirm>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnRmiAsyncConfirm,
-    ): CnRmiAsyncConfirm {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnRmiAsyncConfirm): CnRmiAsyncConfirm {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1751,10 +1642,8 @@ class CnRmiAsyncConfirm$Type extends MessageType<CnRmiAsyncConfirm> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1764,9 +1653,11 @@ class CnRmiAsyncConfirm$Type extends MessageType<CnRmiAsyncConfirm> {
     }
     internalBinaryWrite(message: CnRmiAsyncConfirm, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 result = 1; */
-        if (message.result !== 0) writer.tag(1, WireType.Varint).uint32(message.result);
+        if (message.result !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.result);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1777,26 +1668,21 @@ export const CnRmiAsyncConfirm = new CnRmiAsyncConfirm$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CnRmiAsyncResponse$Type extends MessageType<CnRmiAsyncResponse> {
     constructor() {
-        super('CnRmiAsyncResponse', [
-            { no: 1, name: 'result', kind: 'scalar', T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: 'message', kind: 'scalar', T: 12 /*ScalarType.BYTES*/ },
+        super("CnRmiAsyncResponse", [
+            { no: 1, name: "result", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 2, name: "message", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<CnRmiAsyncResponse>): CnRmiAsyncResponse {
-        const message = globalThis.Object.create(this.messagePrototype!);
+        const message = globalThis.Object.create((this.messagePrototype!));
         message.result = 0;
         message.message = new Uint8Array(0);
-        if (value !== undefined) reflectionMergePartial<CnRmiAsyncResponse>(this, message, value);
+        if (value !== undefined)
+            reflectionMergePartial<CnRmiAsyncResponse>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: CnRmiAsyncResponse,
-    ): CnRmiAsyncResponse {
-        let message = target ?? this.create(),
-            end = reader.pos + length;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CnRmiAsyncResponse): CnRmiAsyncResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
@@ -1808,10 +1694,8 @@ class CnRmiAsyncResponse$Type extends MessageType<CnRmiAsyncResponse> {
                     break;
                 default:
                     let u = options.readUnknownField;
-                    if (u === 'throw')
-                        throw new globalThis.Error(
-                            `Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`,
-                        );
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
                     let d = reader.skip(wireType);
                     if (u !== false)
                         (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
@@ -1819,17 +1703,16 @@ class CnRmiAsyncResponse$Type extends MessageType<CnRmiAsyncResponse> {
         }
         return message;
     }
-    internalBinaryWrite(
-        message: CnRmiAsyncResponse,
-        writer: IBinaryWriter,
-        options: BinaryWriteOptions,
-    ): IBinaryWriter {
+    internalBinaryWrite(message: CnRmiAsyncResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* uint32 result = 1; */
-        if (message.result !== 0) writer.tag(1, WireType.Varint).uint32(message.result);
+        if (message.result !== 0)
+            writer.tag(1, WireType.Varint).uint32(message.result);
         /* bytes message = 2; */
-        if (message.message.length) writer.tag(2, WireType.LengthDelimited).bytes(message.message);
+        if (message.message.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.message);
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }
@@ -1840,24 +1723,21 @@ export const CnRmiAsyncResponse = new CnRmiAsyncResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class NullMessage$Type extends MessageType<NullMessage> {
     constructor() {
-        super('NullMessage', []);
+        super("NullMessage", []);
     }
     create(value?: PartialMessage<NullMessage>): NullMessage {
-        const message = globalThis.Object.create(this.messagePrototype!);
-        if (value !== undefined) reflectionMergePartial<NullMessage>(this, message, value);
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<NullMessage>(this, message, value);
         return message;
     }
-    internalBinaryRead(
-        reader: IBinaryReader,
-        length: number,
-        options: BinaryReadOptions,
-        target?: NullMessage,
-    ): NullMessage {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: NullMessage): NullMessage {
         return target ?? this.create();
     }
     internalBinaryWrite(message: NullMessage, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         let u = options.writeUnknownFields;
-        if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
         return writer;
     }
 }

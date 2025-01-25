@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { DeferredPromise } from '../util/deferredPromise.js';
+import { DeferredPromise } from '../util/deferredPromise';
 
 describe('DeferredPromise', () => {
     it('should resolve correctly', async () => {

@@ -10,7 +10,8 @@ node_modules/
 coverage
 
 # Transpiled files
-out/
+dist/
+test/
 
 # VS Code
 .vscode
@@ -21,6 +22,7 @@ out/
 
 # Optional npm cache directory
 .npm
+*.tgz
 
 # Optional eslint cache
 .eslintcache

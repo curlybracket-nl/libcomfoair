@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PropertyDataType, getPropertyValue } from '../deviceProperties.js';
+import { PropertyDataType, getPropertyValue } from '../deviceProperties';
 
 describe('PropertyDataTypeParsers', () => {
     it('CN_BOOL should parse 0/1 correctly', () => {

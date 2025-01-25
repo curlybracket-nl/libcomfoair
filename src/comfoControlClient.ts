@@ -1,13 +1,14 @@
-import { DiscoveryOperation } from './discoveryOperation.js';
-import { NetworkUtils } from './util/networkUtils.js';
-import { Logger } from './util/logging/index.js';
-import { Opcode, Result } from './protocol/comfoConnect.js';
-import { DeferredPromise } from './util/deferredPromise.js';
-import { opcodes, requestMessages } from './opcodes.js';
-import { ComfoControlMessage } from './comfoControlMessage.js';
-import { ComfoControlTransport } from './comfoControlTransport.js';
-import { NodeProductType } from './consts.js';
-import { DeviceProperty, DevicePropertyType, getPropertyName, getPropertyValue } from './deviceProperties.js';
+import { DiscoveryOperation } from './discoveryOperation';
+import { NetworkUtils } from './util/networkUtils';
+import { Logger } from './util/logging/index';
+import { Opcode, Result } from './protocol/comfoConnect';
+import { DeferredPromise } from './util/deferredPromise';
+import { OpcodeMessageType, opcodes, requestMessages } from './opcodes';
+import { ComfoControlMessage } from './comfoControlMessage';
+import { ComfoControlTransport } from './comfoControlTransport';
+import { NodeProductType } from './consts';
+import { DeviceProperty, DevicePropertyType, getPropertyName, getPropertyValue } from './deviceProperties';
+import { removeArrayElement } from './util/arrayUtils';
 
 export interface DiscoverOptions {
     broadcastAddresses?: string | string[];
@@ -82,6 +83,33 @@ export interface DevicePropertyListner<P extends DeviceProperty = DeviceProperty
     (update: { name: string; property: DeviceProperty; value: DevicePropertyType<P> }): unknown;
 }
 
+type OpcodeResponse<T extends Opcode> = T extends keyof (typeof requestMessages) 
+    ? (typeof requestMessages)[T] extends Opcode.NO_OPERATION ? void : ComfoControlMessage<(typeof requestMessages)[T]>
+    : void;
+
+/**
+ * Represents a client that manages a connection with a ComfoControl Gateway Device.
+ *
+ * Provides methods to discover devices, start and maintain sessions,
+ * register property listeners, and interact with the device.
+ *
+ * @example
+ * ```typescript
+ * const client = new ComfoControlClient({
+ *   address: '192.168.1.100',
+ *   uuid: '1234567890abcdef1234567890abcdef',
+ *   pin: 1234,
+ * });
+ * 
+ * await client.startSession(); 
+ * console.log('Session started:', client.sessionActive);
+ * ```
+ * @remarks
+ * - Make sure to handle errors for production use.
+ * - Register property listeners to receive real-time updates.
+ *
+ * @public
+ */
 export class ComfoControlClient {
     private transport: ComfoControlTransport;
     private pendingReplies: Record<number, DeferredPromise<ComfoControlMessage>> = {};
@@ -200,16 +228,16 @@ export class ComfoControlClient {
      * @returns {Promise<ComfoControlMessage<R>>} A promise that resolves to the response message.
      * @throws Will throw an error if the transport is already connecting, the session is not active, or the response opcode is unexpected.
      */
-    public async send<
-        T extends keyof typeof requestMessages,
-        R extends (typeof requestMessages)[T],
-        TRequest extends ReturnType<(typeof opcodes)[T]['create']>,
-    >(opcode: T, data?: TRequest): Promise<ComfoControlMessage<R>> {
+    public async send<T extends keyof typeof requestMessages>(opcode: T, data?: OpcodeMessageType<T>): Promise<OpcodeResponse<T>> {
         await this.ensureConnected(opcode);
         const responseOpcode = requestMessages[opcode];
-        const requestId = await this.transport.send(opcode, data ?? ({} as TRequest));
-        this.pendingReplies[requestId] = new DeferredPromise<ComfoControlMessage>();
+        const requestId = await this.transport.send(opcode, data ?? ({} as OpcodeMessageType<T>));
 
+        if (!responseOpcode || responseOpcode === Opcode.NO_OPERATION) {
+            return void 0 as OpcodeResponse<T>;
+        }
+
+        this.pendingReplies[requestId] = new DeferredPromise<ComfoControlMessage>();
         return this.pendingReplies[requestId].then((response) => {
             delete this.pendingReplies[requestId];
             if (response.opcode !== responseOpcode) {
@@ -217,7 +245,7 @@ export class ComfoControlClient {
                     `Unexpected response opcode: ${Opcode[response.opcode]} (expected: ${Opcode[responseOpcode]})`,
                 );
             }
-            return response as unknown as ComfoControlMessage<R>;
+            return response as unknown as OpcodeResponse<T>;
         });
     }
 
@@ -266,7 +294,7 @@ export class ComfoControlClient {
         const notification = message.deserialize();
         const property = this.registeredProperties[notification.pdid];
         if (!property) {
-            this.logger.warn(`Received update for unregistered property: ${notification.pdid}`);
+            this.logger.warn(`Received update for unregistered property: ${getPropertyName(notification.pdid) ?? 'UNKNOWN'} (${notification.pdid})`);
             return;
         }
 
@@ -319,19 +347,24 @@ export class ComfoControlClient {
         listener: DevicePropertyListner<T>,
     ): Promise<void> {
         if (!this.propertyListeners[property.propertyId]) {
-            await this.requestPropertyUpdates(property);
             this.propertyListeners[property.propertyId] = [];
         }
         this.propertyListeners[property.propertyId].push(listener);
+        try {
+            await this.requestPropertyUpdates(property);
+        } catch (err) {
+            removeArrayElement(this.propertyListeners[property.propertyId], listener);
+            throw err;
+        }
     }
 
     private async requestPropertyUpdates(property: DeviceProperty) {
+        this.registeredProperties[property.propertyId] = property;
         await this.send(Opcode.CN_RPDO_REQUEST, {
             pdid: property.propertyId,
             zone: 1,
             type: property.dataType,
             timeout: 0,
         });
-        this.registeredProperties[property.propertyId] = property;
     }
 }

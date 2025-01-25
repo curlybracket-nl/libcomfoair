@@ -1,6 +1,6 @@
-import { GatewayOperation, Opcode, Result } from './protocol/comfoConnect.js';
-import { opcodes } from './opcodes.js';
-import { ComfoControlHeader } from './comfoControlHeader.js';
+import { GatewayOperation, Opcode, Result } from './protocol/comfoConnect';
+import { opcodes } from './opcodes';
+import { ComfoControlHeader } from './comfoControlHeader';
 import { BinaryReadOptions } from '@protobuf-ts/runtime';
 
 /**

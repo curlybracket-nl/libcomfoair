@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { COMFO_MESSAGE_HEADER_LENGTH, ComfoControlHeader } from '../comfoControlHeader.js';
+import { COMFO_MESSAGE_HEADER_LENGTH, ComfoControlHeader } from '../comfoControlHeader';
 
 describe('ComfoControlHeader', () => {
     it('should construct correctly', () => {

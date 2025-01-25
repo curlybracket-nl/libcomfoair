@@ -1,20 +1,27 @@
 {
   "name": "libcomfoair",
   "author": "Peter van Gulik <peter@curlybracket.nl>",
-  "version": "0.0.0",
-  "type": "module",
+  "version": "0.6.0",
   "description": "Library to communicate with Zehnder Comfoair ventilation unit",
   "license": "GPL-2.0",
+  "type": "commonjs",
   "engines": {
     "node": ">= 20.9"
   },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "start": "node out/src/main.js",
-    "clean": "rimraf coverage build tmp",
+    "clean": "rimraf coverage dist tmp",
     "prebuild": "npm run lint",
-    "build": "tsc -p tsconfig.json",
-    "build:watch": "tsc -w -p tsconfig.json",
-    "build:release": "npm run clean && tsc -p tsconfig.release.json",
+    "prepack": "npm run protoc && npm run build:release",
+    "watch": "tsc -p tsconfig.json --watch",
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "build:release": "rimraf dist && tsc -p tsconfig.release.json",
     "lint": "eslint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage.enabled --coverage.all",

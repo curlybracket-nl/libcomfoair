@@ -1,9 +1,9 @@
-import dgram from 'node:dgram';
+import { Socket, createSocket } from 'node:dgram';
 import { EventEmitter } from 'events';
-import { DeferredPromise } from './util/deferredPromise.js';
-import { GatewayDiscovery } from './protocol/comfoConnect.js';
-import { Logger } from './util/logging/index.js';
-import { DISCOVERY_PORT } from './consts.js';
+import { DeferredPromise } from './util/deferredPromise';
+import { GatewayDiscovery } from './protocol/comfoConnect';
+import { Logger } from './util/logging/index';
+import { DISCOVERY_PORT } from './consts';
 
 export interface ComfoControlServerInfo {
     /**
@@ -37,7 +37,7 @@ export interface ComfoControlServerInfo {
  * By default routers do not relay broadcast messages between subnets.
  */
 export class DiscoveryOperation extends EventEmitter implements Promise<ComfoControlServerInfo[]> {
-    private readonly socket: dgram.Socket;
+    private readonly socket: Socket;
     private timeoutHandle: NodeJS.Timeout;
     private broadcastHandle: NodeJS.Timeout;
     private discoveryPromise?: DeferredPromise<ComfoControlServerInfo[]>;
@@ -56,7 +56,7 @@ export class DiscoveryOperation extends EventEmitter implements Promise<ComfoCon
         if (this.broadcastAddresses.length === 0) {
             throw new Error('At least one broadcast address must be provided');
         }
-        this.socket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+        this.socket = createSocket({ type: 'udp4', reuseAddr: true });
     }
 
     /**
