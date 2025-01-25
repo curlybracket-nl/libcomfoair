@@ -1,15 +1,15 @@
 # libcomfoair 🌬️
 
-This library is 100% TypeScript-based, written from scratch, and strongly typed, making it easier to develop reliable and maintainable applications.
+libcomfoair is a TypeScript library for interacting with Zehnder ComfoAirQ ventilation units through the ComfoConnect LAN C gateway. It enables you to discover these gateways on your local network, read and write device properties, and subscribe to property change notifications.
 
-`libcomfoair` is a TypeScript library for interacting with Zehnder ComfoAirQ ventilation units via the Zehnder ComfoConnect LAN C gateway (sometimes also referred to as ComfoControl). It allows you to discover these gateways on your network, read and write properties, and listen for property changes on ComfoAirQ units.
+This library is completely written in TypeScript and strongly typed, making development more reliable and maintainable.
 
 ## Features ✨
 
-- 🔍 Discover Zehnder ComfoConnect LAN C gateways on the same network.
-- 📖 Read and write properties of Zehnder ComfoAirQ devices.
-- 🔄 Listen for property changes on ComfoAirQ units.
-- ⚙️ TypeScript-based, ensuring reliable development using strong types.
+- 🔍 Discover Zehnder ComfoConnect LAN C gateways on your network.
+- 📖 Read and write properties of Zehnder ComfoAirQ ventilation units.
+- 🔄 Listen for real-time updates of changing properties.
+- ⚙️ Strong typing ensures reliable code and easy maintainability.
 
 ## Installation 📦
 
@@ -19,28 +19,23 @@ npm install libcomfoair
 
 ## Usage 🚀
 
-### Discovering Devices 🔍
+Below are basic usage examples. The library can discover devices, start sessions to communicate with ventilation units, and request property updates.
 
-To discover Zehnder ComfoConnect LAN C gateways on your network, use the `discoveryOperation` function. Note that the gateway must be on the same network as the device performing the discovery. The discovery operation can be awaited and also emits events.
+### Discovering Devices
+
+Use the discovery feature to find Zehnder ComfoConnect LAN C gateways on the same network. You can await the discovery process or attach event listeners.
 
 ```typescript
-import { ComfoControlClient } from 'libcomfoair';
+// Discover a gateway with an optional limit:
+ComfoControlClient.discover({ limit: 1 })
+  .then(devices => {
+    console.log('Discovered devices:', devices);
+    // If desired, create a client and make requests:
+    // const client = new ComfoControlClient(devices[0]);
+    // await client.getServerTime();
+  });
 
-// Awaiting discovery using a promise
-// When a limit is set the discovery stops once the limit is reached
-// Otherwise it continues for the set timeout 
-ComfoControlClient.discover({ limit: 1 }).then(devices => {
-  console.log('Discovered devices:', devices);
-  if (devices.length > 0) {
-    const client = new ComfoControlClient(devices[0]);
-    // For example, retrieve server time 
-    client.getServerTime().then(time => {
-      console.log(`Got server time: ${time}`);
-    });
-  }
-});
-
-// Listening to discovery events
+// Or listen for discovery events:
 const discovery = ComfoControlClient.discover({ limit: 1 });
 discovery.on('discover', device => {
   console.log('Discovered device:', device);
@@ -50,46 +45,31 @@ discovery.on('completed', () => {
 });
 ```
 
-### Listening for Property Changes 🔄
-
-You can listen for property changes on a ComfoAirQ unit by registering property listeners. Make sure you connect the client first:
-
-```typescript
-import { ComfoControlClient, ComfoAirProperties } from 'libcomfoair';
-import { ComfoControlServerInfo } from 'libcomfoair'; // Example import
-
-async function main() {
-  const serverInfo: ComfoControlServerInfo = {
-    ip: 'device-ip-address',
-    port: 80,
-    // ...other fields...
-  };
-
-  const client = new ComfoControlClient(serverInfo);
-
-  // Register a listener for OUTDOOR_AIR_TEMPERATURE
-  await client.registerPropertyListener(ComfoAirProperties.OUTDOOR_AIR_TEMPERATURE, ({ value }) => {
-    console.log(`Outdoor air temperature: ${value / 10} °C`);
-  });
-
-  // Register a listener for SUPPLY_AIR_TEMPERATURE
-  await client.registerPropertyListener(ComfoAirProperties.SUPPLY_AIR_TEMPERATURE, ({ value }) => {
-    console.log(`Supply air temperature: ${value / 10} °C`);
-  });
-
-  // Finally connect the client
-  // This will start a session and begin receiving property updates
-  await client.getServerTime(); // Example request
-}
-```
-
 ## How Device Discovery Works 🕵️‍♂️
 
-The discovery of Zehnder ComfoConnect LAN C gateways works by sending a broadcast message on the network and waiting for responses. For the discovery to work, the gateway must be on the same network as the device performing the discovery.
+Discovery sends a broadcast message and waits for devices to respond. This works only if the gateway is on the same subnet as the host running the discovery. Most routers do not forward broadcast messages to other subnets by default.
+
+### Listening for Property Changes
+
+After obtaining the device’s info, you can register property listeners that trigger when values change:
+
+```typescript
+// Example usage (simplified):
+const client = new ComfoControlClient({
+  address: '192.168.1.10',
+  uuid: 'your-device-uuid-here',
+});
+
+// Register a listener for OUTDOOR_AIR_TEMPERATURE:
+await client.registerPropertyListener(ComfoAirProperties.OUTDOOR_AIR_TEMPERATURE, ({ value }) => {
+  console.log(`Outdoor air temperature: ${value / 10} °C`);
+});
+
+// You may then connect or make a request:
+await client.getServerTime();
+```
 
 ## Available Opcodes
-
-Below is a list of all ComfoControl opcodes supported by this library:
 
 | Opcode                        | Description                                            |
 |-------------------------------|--------------------------------------------------------|
@@ -107,7 +87,7 @@ Below is a list of all ComfoControl opcodes supported by this library:
 | SET_SUPPORT_ID_REQUEST        | Sets the support ID.                                  |
 | GET_WEB_ID_REQUEST            | Retrieves the web ID.                                 |
 | SET_WEB_ID_REQUEST            | Sets the web ID.                                      |
-| SET_PUSH_ID_REQUEST           | Sets the push notification ID.                        |
+| SET_PUSH_ID_REQUEST           | Sets the push message ID.                             |
 | DEBUG_REQUEST                 | Debug request.                                        |
 | UPGRADE_REQUEST               | Initiates firmware upgrade.                           |
 | SET_DEVICE_SETTINGS_REQUEST   | Adjusts device settings.                              |
@@ -149,20 +129,20 @@ Below is a list of all ComfoControl opcodes supported by this library:
 | CN_FUP_READ_REGISTER_REQUEST  | Firmware update read register request.               |
 | CN_FUP_READ_REGISTER_CONFIRM  | Confirms read register request.                      |
 | CN_FUP_PROGRAM_BEGIN_REQUEST  | Begins firmware update programming.                  |
-| CN_FUP_PROGRAM_BEGIN_CONFIRM  | Confirms firmware update programming begin.          |
+| CN_FUP_PROGRAM_BEGIN_CONFIRM  | Confirms program begin.                               |
 | CN_FUP_PROGRAM_REQUEST        | Firmware update programming data request.            |
-| CN_FUP_PROGRAM_CONFIRM        | Confirms firmware update programming data request.   |
+| CN_FUP_PROGRAM_CONFIRM        | Confirms firmware programming data request.          |
 | CN_FUP_PROGRAM_END_REQUEST    | Ends firmware update programming.                    |
 | CN_FUP_PROGRAM_END_CONFIRM    | Confirms end of firmware programming.                |
 | CN_FUP_READ_REQUEST           | Requests firmware read.                              |
 | CN_FUP_READ_CONFIRM           | Confirms firmware read request.                      |
-| CN_FUP_RESET_REQUEST          | Requests firmware programming reset.                 |
-| CN_FUP_RESET_CONFIRM          | Confirms firmware programming reset.                 |
+| CN_FUP_RESET_REQUEST          | Requests firmware reset.                             |
+| CN_FUP_RESET_CONFIRM          | Confirms firmware reset.                             |
 
 ## Strongly Typed Library
 
-This library is strongly typed, providing full autocomplete functionality for known ComfoAirQ properties and message types. It makes interacting with the ComfoControl LAN-C bridge more straightforward and reliable. By leveraging TypeScript’s type system, you benefit from enhanced code completion, reduced runtime errors, and more precise typings when dealing with ComfoAirQ properties and messages.
+This library is strongly typed, ensuring that you benefit from autocompletion and reduced runtime errors. It adds clarity when dealing with ComfoAirQ properties and messages by leveraging TypeScript’s type system.
 
 ## Credits 🙏
 
-This library is based on the protocol documented by Michaël Arnauts. Special thanks to Michaël for his work in documenting the protocol.
+This project is based on the protocol specifications documented by Michaël Arnauts. Thank you to Michaël for making this information available.
