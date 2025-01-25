@@ -1,4 +1,4 @@
-import os from 'os';
+import { hostname, networkInterfaces } from 'node:os';
 
 export class NetworkUtils {
     /**
@@ -6,7 +6,7 @@ export class NetworkUtils {
      * @returns An array of broadcast addresses.
      */
     static getBroadcastAddresses(): string[] {
-        const interfaces = os.networkInterfaces();
+        const interfaces = networkInterfaces();
         const broadcastAddresses: string[] = [];
 
         for (const networks of Object.values(interfaces)) {
@@ -27,6 +27,6 @@ export class NetworkUtils {
     }
 
     static getHostname(): string {
-        return os.hostname();
+        return hostname();
     }
 }
