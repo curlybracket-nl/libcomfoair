@@ -1,7 +1,7 @@
 /**
  * Default ComfoAir Client UUID used by the App.
  */
-export const CLIENT_UUID = '20200428000000000000000009080408';
+export const CLIENT_UUID = '20200428000000000000000009080407';
 
 /**
  * The default port the LAN-C gateway listens on for client connections (TCP)
