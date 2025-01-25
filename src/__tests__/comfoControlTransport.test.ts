@@ -42,7 +42,7 @@ describe('ComfoControlTransport', () => {
 
     it('should connect successfully', async () => {
         await transport.connect();
-        expect(mockSocket.connect).toHaveBeenCalledWith(5678, '127.0.0.1');
+        expect(mockSocket.connect).toHaveBeenCalledWith(56747, '127.0.0.1');
         expect(transport.isConnected).toBe(true);
     });
 

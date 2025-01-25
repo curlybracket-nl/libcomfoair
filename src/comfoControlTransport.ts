@@ -13,7 +13,7 @@ export interface ComfoControlTransportOptions {
      */
     address: string;
     /**
-     * Port of the device defaults to 5674; see {@link GATEWAY_PORT} constant
+     * Port of the device defaults to 56747; see {@link GATEWAY_PORT} constant
      */
     port?: number;
     /**
