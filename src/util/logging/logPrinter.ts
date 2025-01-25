@@ -1,4 +1,4 @@
-import { LogLevel } from './logLevel.js';
+import { LogLevel } from './logLevel';
 import * as fs from 'fs';
 
 /**
@@ -79,6 +79,22 @@ export class ConsolePrinter extends BasePrinter {
     protected output(level: LogLevel, name: string, message: string): void {
         const timestamp = `[${new Date().toISOString()}] `;
         console.log(`${timestamp}[${level}] [${name}] ${message}`);
+    }
+}
+
+/**
+ * Prints all logging messages using the console.debug function.
+ */
+export class DebugPrinter extends BasePrinter {
+    /**
+     * Output a formatted log message to the console.
+     * @param level - The severity level of the log message.
+     * @param name - The name of the logger.
+     * @param message - The formatted log message.
+     */
+    protected output(level: LogLevel, name: string, message: string): void {
+        const timestamp = `[${new Date().toISOString()}] `;
+        console.debug(`${timestamp}[${level}] [${name}] ${message}`);
     }
 }
 

@@ -1,5 +1,5 @@
-import { LogLevel } from './logLevel.js';
-import { ILogPrinter } from './logPrinter.js';
+import { LogLevel } from './logLevel';
+import { DebugPrinter, ILogPrinter } from './logPrinter';
 
 /**
  * Logger class for managing log messages.
@@ -13,7 +13,7 @@ export class Logger {
     /*
      * The root appliction logger.
      */
-    static readonly root: Logger = new Logger('root', LogLevel.DEFAULT, undefined);
+    private static root: Logger = new Logger('comfo-connect', LogLevel.DEFAULT, undefined);
 
     /**
      * Get the root logger in the hierarchy.
@@ -21,6 +21,43 @@ export class Logger {
      */
     public static getRoot(): Logger {
         return Logger.root;
+    }
+
+    /**
+     * Initialize the root logger with the given configuration. Can only be called once per session.
+     * @example
+     * ```typescript
+     * Logger.start({
+     *    name: 'comfo-connect',
+     *    level: LogLevel.DEBUG,
+     *    printers: [ new FilePrinter('./comfo.log'), ConsolePrinter() ]
+     * });
+     * @param options - The configuration options for the root logger.
+     */
+    public static start({
+        /**
+         * The name of the root logger.
+         */
+        name = 'comfo-connect',
+        /**
+         * The log level for the root logger.
+         */
+        level = LogLevel.DEFAULT,
+        /**
+         * The printers used to output log messages; defaults to a DebugPrinter.
+         */
+        printers = [ new DebugPrinter() ]
+    }): void {
+        const root = Logger.getRoot();
+        for (const printer of printers) {
+            root.addPrinter(printer);
+        }
+        if (level) {
+            root.setLogLevel(level);
+        }
+        if (name) {
+            root.setName(name);
+        }
     }
 
     /**
@@ -32,7 +69,7 @@ export class Logger {
     constructor(
         private name: string,
         severity?: LogLevel,
-        private readonly parent: Logger = Logger.root,
+        private readonly parent: Logger = Logger.getRoot(),
     ) {
         if (parent) {
             parent.children.push(this);
