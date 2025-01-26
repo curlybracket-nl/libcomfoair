@@ -6,12 +6,13 @@ npm-debug.log*
 # Dependencies
 node_modules/
 
-# Coverage
+# Coverage &* test
 coverage
+test
+vitest-ctrf
 
 # Transpiled files
 dist/
-test/
 
 # VS Code
 .vscode
