@@ -3,7 +3,7 @@ import { NetworkUtils } from './util/networkUtils';
 import { Logger } from './util/logging/index';
 import { Opcode, Result } from './protocol/comfoConnect';
 import { DeferredPromise } from './util/deferredPromise';
-import { OpcodeMessageType, opcodes, requestMessages } from './opcodes';
+import { OpcodeMessageType, requestMessages } from './opcodes';
 import { ComfoControlMessage } from './comfoControlMessage';
 import { ComfoControlTransport } from './comfoControlTransport';
 import { NodeProductType } from './consts';
@@ -80,7 +80,7 @@ enum SessionState {
 }
 
 export interface DevicePropertyListner<P extends DeviceProperty = DeviceProperty> {
-    (update: { name: string; property: DeviceProperty; value: DevicePropertyType<P> }): unknown;
+    (update: { readonly propertyName: string; readonly value: DevicePropertyType<P> } & DeviceProperty): unknown;
 }
 
 type OpcodeResponse<T extends Opcode> = T extends keyof (typeof requestMessages) 
@@ -117,8 +117,11 @@ export class ComfoControlClient {
     private nodes: Record<number, ComfoControlNode> = {};
     private deviceName: string;
 
-    private propertyListeners: Record<number, Array<DevicePropertyListner>> = {};
-    private registeredProperties: Record<number, DeviceProperty> = {};
+    private deviceProperties: Record<number, {
+        listners: Array<DevicePropertyListner>,
+        propertyName: string,
+        registered: boolean,
+    } & DeviceProperty> = {};
 
     /**
      * Defines handlers for specific opcodes that are received from the server without a preceding request.
@@ -211,8 +214,11 @@ export class ComfoControlClient {
         this.sessionState = SessionState.Active;
 
         // Re-register all properties that were registered before the session was closed
-        for (const property of Object.values(this.registeredProperties)) {
-            await this.requestPropertyUpdates(property);
+        for (const info of Object.values(this.deviceProperties).filter((p) =>p.registered)) {
+            // Do not await re-registration to avoid blocking the session start
+            this.requestPropertyUpdates(info).catch(() => {
+                this.logger.warn(`Failed to re-register property: ${info.propertyName ?? 'UNKNOWN'} (${info.propertyId})`);
+            });
         }
     }
 
@@ -292,21 +298,21 @@ export class ComfoControlClient {
 
     private onPropertyUpdateNotification(message: ComfoControlMessage<Opcode.CN_RPDO_NOTIFICATION>) {
         const notification = message.deserialize();
-        const property = this.registeredProperties[notification.pdid];
-        if (!property) {
+        const info = this.deviceProperties[notification.pdid];
+
+        if (!info) {
             this.logger.warn(`Received update for unregistered property: ${getPropertyName(notification.pdid) ?? 'UNKNOWN'} (${notification.pdid})`);
             return;
         }
 
-        const listeners = this.propertyListeners[notification.pdid];
-        if (!listeners) {
-            return;
-        }
-
-        const value = getPropertyValue(property, Buffer.from(notification.data));
-        const propertyName = getPropertyName(property.propertyId) ?? 'UNKNOWN';
-        for (const listener of listeners) {
-            listener({ name: propertyName, property, value });
+        const value = getPropertyValue(info, Buffer.from(notification.data));
+        for (const listener of info.listners) {
+            listener({ 
+                propertyId: info.propertyId,
+                propertyName: info.propertyName,
+                dataType: info.dataType,
+                value,
+            });
         }
     }
 
@@ -346,25 +352,34 @@ export class ComfoControlClient {
         property: T,
         listener: DevicePropertyListner<T>,
     ): Promise<void> {
-        if (!this.propertyListeners[property.propertyId]) {
-            this.propertyListeners[property.propertyId] = [];
-        }
-        this.propertyListeners[property.propertyId].push(listener);
+        const info = this.getDevicePropertyInfo(property);        
+        info.listners.push(listener);
         try {
             await this.requestPropertyUpdates(property);
         } catch (err) {
-            removeArrayElement(this.propertyListeners[property.propertyId], listener);
+            removeArrayElement(info.listners, listener);
             throw err;
         }
     }
 
-    private async requestPropertyUpdates(property: DeviceProperty) {
-        this.registeredProperties[property.propertyId] = property;
+    private async requestPropertyUpdates(property: DeviceProperty) {        
         await this.send(Opcode.CN_RPDO_REQUEST, {
             pdid: property.propertyId,
             zone: 1,
             type: property.dataType,
             timeout: 0,
         });
+        this.getDevicePropertyInfo(property).registered = true;
+    }
+
+    private getDevicePropertyInfo(property: DeviceProperty) {
+        return this.deviceProperties[property.propertyId] ?? (
+            this.deviceProperties[property.propertyId] = {
+                ...property,
+                propertyName: getPropertyName(property.propertyId) ?? 'UNKNOWN',
+                listners: [],
+                registered: false,
+            }
+        );
     }
 }

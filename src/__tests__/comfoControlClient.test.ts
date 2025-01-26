@@ -115,6 +115,8 @@ describe('ComfoControlClient', () => {
         await client.registerPropertyListener(property, listener);
 
         expect(mockTransport.send).toHaveBeenCalledWith(Opcode.CN_RPDO_REQUEST, expect.any(Object));
-        expect(client['propertyListeners'][property.propertyId]).toContain(listener);
+        expect(client['deviceProperties'][property.propertyId]).toBeDefined();
+        expect(client['deviceProperties'][property.propertyId].listners).toContain(listener);
+        expect(client['deviceProperties'][property.propertyId].registered).toBe(true);
     });
 });
