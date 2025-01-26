@@ -19,7 +19,7 @@ jobs:
         with:
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm prettier:check
       - run: pnpm build
