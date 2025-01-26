@@ -9,6 +9,10 @@
   "engines": {
     "node": ">= 20.9"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/curlybracket-nl/libcomfoair.git"
+  },
   "main": "./dist/index.js",
   "files": [
     "dist",
