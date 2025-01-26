@@ -55,8 +55,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag: "v${{ env.VERSION }}"
+          tag_name: "v${{ env.VERSION }}"
           name: Release ${{ env.VERSION }}
           files: "*.tgz"
+          generate_release_notes: true
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
