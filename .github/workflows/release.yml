@@ -13,12 +13,13 @@ on:
           - major
         default: patch
 
-permissions:
-  contents: write
-
 jobs:
   release:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
