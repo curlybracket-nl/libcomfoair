@@ -6,11 +6,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@v4
-      - uses: volta-cli/action@v4
-      - run: npm ci --no-audit
-      - run: npm run lint --if-present
-      - run: npm run prettier:check
-      - run: npm run build
-      - run: npm test
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+      - run: pnpm lint
+      - run: pnpm prettier:check
+      - run: pnpm build
+      - name: Run Tests
+        run: pnpm test:coverage
+      - name: Report Test Coverage
+        if: always() 
+        uses: davelosert/vitest-coverage-report-action@v2
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: './vitest-ctrf/*.json'
+        if: always()
