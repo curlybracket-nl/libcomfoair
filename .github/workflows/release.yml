@@ -13,6 +13,9 @@ on:
           - major
         default: patch
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -36,19 +39,20 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions@users.noreply.github.com"
-          pnpm version ${{ github.event.inputs.versionBump }} -m "chore(release): ${{ env.VERSION }}"
-          echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV        
+          pnpm version ${{ github.event.inputs.versionBump }}
+          echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+          git push --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish
-        run: pnpm publish
+        run: pnpm publish --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag:  ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          tag: "v${{ env.VERSION }}"
+          name: Release ${{ env.VERSION }}
           files: "*.tgz"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
