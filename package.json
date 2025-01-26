@@ -27,8 +27,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage.enabled --coverage.all",
     "test:watch": "vitest",
-    "prettier": "prettier \"{src}/**/*.{ts,mts}\" --config .prettierrc --write",
-    "prettier:check": "prettier \"{src/**/*.{ts,mts}\" --config .prettierrc --check",
+    "prettier": "pnpm prettier:check --write",
+    "prettier:check": "prettier \"src/**/*.ts\" --config .prettierrc --check",
     "protoc": "protoc --experimental_allow_proto3_optional  --ts_out src/protocol --ts_opt ts_nocheck --proto_path src/protocol src/protocol/comfoConnect.proto"
   },
   "devDependencies": {

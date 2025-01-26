@@ -1,0 +1,58 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      versionBump:
+        description: 'Select a version bump: patch, minor, or major'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: 'pnpm'
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test
+      - run: pnpm pack
+      - name: Bump version
+        id: bump_version
+        run: |
+          pnpm version ${{ github.event.inputs.versionBump }} --no-git-tag-version
+          echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+      - name: Create and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v${{ env.VERSION }}
+          message: "chore(release): ${{ env.VERSION }}"
+      - name: Publish
+        run: pnpm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag:  ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          files: "*.tgz"
+          body: ${{ steps.tag_version.outputs.changelog }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
