@@ -46,7 +46,7 @@ export class Logger {
         /**
          * The printers used to output log messages; defaults to a DebugPrinter.
          */
-        printers = [ new DebugPrinter() ]
+        printers = [new DebugPrinter()],
     }): void {
         const root = Logger.getRoot();
         for (const printer of printers) {

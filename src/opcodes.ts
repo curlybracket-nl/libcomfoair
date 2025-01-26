@@ -18,7 +18,7 @@ import {
     StartSessionRequest,
 } from './protocol/comfoConnect';
 
-export type OpcodeMessageType<T extends Opcode> = (typeof opcodes)[T] extends IMessageType<infer U>? U : never;
+export type OpcodeMessageType<T extends Opcode> = (typeof opcodes)[T] extends IMessageType<infer U> ? U : never;
 
 export const opcodes = {
     [Opcode.NO_OPERATION]: NullMessage as IMessageType<NullMessage>,

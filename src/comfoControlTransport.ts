@@ -134,10 +134,7 @@ export class ComfoControlTransport extends EventEmitter<{
         });
     }
 
-    public send<T extends keyof typeof opcodes>(
-        opcode: T,
-        data: OpcodeMessageType<T>,
-    ): Promise<number> {
+    public send<T extends keyof typeof opcodes>(opcode: T, data: OpcodeMessageType<T>): Promise<number> {
         if (this.state !== ConnectionState.CONNECTED || this.socket === null) {
             throw new Error(
                 'Cannot send data on a disconnected socket; connect the transport first before calling send',
@@ -169,11 +166,7 @@ export class ComfoControlTransport extends EventEmitter<{
         });
     }
 
-    private prepareMessage<T extends keyof typeof opcodes>(
-        opcode: T,
-        id: number,
-        data: OpcodeMessageType<T>,
-    ): Buffer {
+    private prepareMessage<T extends keyof typeof opcodes>(opcode: T, id: number, data: OpcodeMessageType<T>): Buffer {
         if (!opcodes[opcode]) {
             throw new Error(`Unsupported opcode: ${Opcode[opcode]}`);
         }

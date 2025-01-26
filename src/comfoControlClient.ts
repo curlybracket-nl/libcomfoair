@@ -83,8 +83,10 @@ export interface DevicePropertyListner<P extends DeviceProperty = DeviceProperty
     (update: { readonly propertyName: string; readonly value: DevicePropertyType<P> } & DeviceProperty): unknown;
 }
 
-type OpcodeResponse<T extends Opcode> = T extends keyof (typeof requestMessages) 
-    ? (typeof requestMessages)[T] extends Opcode.NO_OPERATION ? void : ComfoControlMessage<(typeof requestMessages)[T]>
+type OpcodeResponse<T extends Opcode> = T extends keyof typeof requestMessages
+    ? (typeof requestMessages)[T] extends Opcode.NO_OPERATION
+        ? void
+        : ComfoControlMessage<(typeof requestMessages)[T]>
     : void;
 
 /**
@@ -100,8 +102,8 @@ type OpcodeResponse<T extends Opcode> = T extends keyof (typeof requestMessages)
  *   uuid: '1234567890abcdef1234567890abcdef',
  *   pin: 1234,
  * });
- * 
- * await client.startSession(); 
+ *
+ * await client.startSession();
  * console.log('Session started:', client.sessionActive);
  * ```
  * @remarks
@@ -117,11 +119,14 @@ export class ComfoControlClient {
     private nodes: Record<number, ComfoControlNode> = {};
     private deviceName: string;
 
-    private deviceProperties: Record<number, {
-        listners: Array<DevicePropertyListner>,
-        propertyName: string,
-        registered: boolean,
-    } & DeviceProperty> = {};
+    private deviceProperties: Record<
+        number,
+        {
+            listners: Array<DevicePropertyListner>;
+            propertyName: string;
+            registered: boolean;
+        } & DeviceProperty
+    > = {};
 
     /**
      * Defines handlers for specific opcodes that are received from the server without a preceding request.
@@ -214,10 +219,12 @@ export class ComfoControlClient {
         this.sessionState = SessionState.Active;
 
         // Re-register all properties that were registered before the session was closed
-        for (const info of Object.values(this.deviceProperties).filter((p) =>p.registered)) {
+        for (const info of Object.values(this.deviceProperties).filter((p) => p.registered)) {
             // Do not await re-registration to avoid blocking the session start
             this.requestPropertyUpdates(info).catch(() => {
-                this.logger.warn(`Failed to re-register property: ${info.propertyName ?? 'UNKNOWN'} (${info.propertyId})`);
+                this.logger.warn(
+                    `Failed to re-register property: ${info.propertyName ?? 'UNKNOWN'} (${info.propertyId})`,
+                );
             });
         }
     }
@@ -234,7 +241,10 @@ export class ComfoControlClient {
      * @returns {Promise<ComfoControlMessage<R>>} A promise that resolves to the response message.
      * @throws Will throw an error if the transport is already connecting, the session is not active, or the response opcode is unexpected.
      */
-    public async send<T extends keyof typeof requestMessages>(opcode: T, data?: OpcodeMessageType<T>): Promise<OpcodeResponse<T>> {
+    public async send<T extends keyof typeof requestMessages>(
+        opcode: T,
+        data?: OpcodeMessageType<T>,
+    ): Promise<OpcodeResponse<T>> {
         await this.ensureConnected(opcode);
         const responseOpcode = requestMessages[opcode];
         const requestId = await this.transport.send(opcode, data ?? ({} as OpcodeMessageType<T>));
@@ -301,13 +311,15 @@ export class ComfoControlClient {
         const info = this.deviceProperties[notification.pdid];
 
         if (!info) {
-            this.logger.warn(`Received update for unregistered property: ${getPropertyName(notification.pdid) ?? 'UNKNOWN'} (${notification.pdid})`);
+            this.logger.warn(
+                `Received update for unregistered property: ${getPropertyName(notification.pdid) ?? 'UNKNOWN'} (${notification.pdid})`,
+            );
             return;
         }
 
         const value = getPropertyValue(info, Buffer.from(notification.data));
         for (const listener of info.listners) {
-            listener({ 
+            listener({
                 propertyId: info.propertyId,
                 propertyName: info.propertyName,
                 dataType: info.dataType,
@@ -352,7 +364,7 @@ export class ComfoControlClient {
         property: T,
         listener: DevicePropertyListner<T>,
     ): Promise<void> {
-        const info = this.getDevicePropertyInfo(property);        
+        const info = this.getDevicePropertyInfo(property);
         info.listners.push(listener);
         try {
             await this.requestPropertyUpdates(property);
@@ -362,7 +374,7 @@ export class ComfoControlClient {
         }
     }
 
-    private async requestPropertyUpdates(property: DeviceProperty) {        
+    private async requestPropertyUpdates(property: DeviceProperty) {
         await this.send(Opcode.CN_RPDO_REQUEST, {
             pdid: property.propertyId,
             zone: 1,
@@ -373,13 +385,14 @@ export class ComfoControlClient {
     }
 
     private getDevicePropertyInfo(property: DeviceProperty) {
-        return this.deviceProperties[property.propertyId] ?? (
-            this.deviceProperties[property.propertyId] = {
+        return (
+            this.deviceProperties[property.propertyId] ??
+            (this.deviceProperties[property.propertyId] = {
                 ...property,
                 propertyName: getPropertyName(property.propertyId) ?? 'UNKNOWN',
                 listners: [],
                 registered: false,
-            }
+            })
         );
     }
 }
