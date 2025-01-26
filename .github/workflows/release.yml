@@ -41,13 +41,15 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           pnpm version ${{ github.event.inputs.versionBump }}
           echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
-          git push --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish
-        run: pnpm publish --no-git-checks
+        run: | 
+          pnpm publish --no-git-checks
+          git push --tags
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
