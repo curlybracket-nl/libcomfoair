@@ -1,6 +1,6 @@
-# libcomfoair 🌬️
+# lib-comfoair 🌬️
 
-libcomfoair is a TypeScript library for interacting with Zehnder ComfoAirQ ventilation units through the ComfoConnect LAN C gateway. It enables you to discover these gateways on your local network, read and write device properties, and subscribe to property change notifications.
+lib-comfoair is a TypeScript library for interacting with Zehnder ComfoAirQ ventilation units through the ComfoConnect LAN C gateway. It enables you to discover these gateways on your local network, read and write device properties, and subscribe to property change notifications.
 
 This library is completely written in TypeScript and strongly typed, making development more reliable and maintainable.
 
@@ -13,8 +13,14 @@ This library is completely written in TypeScript and strongly typed, making deve
 
 ## Installation 📦
 
+#### NPM
 ```bash
-npm install libcomfoair
+npm i lib-comfoair
+```
+
+#### PNPM
+```bash
+pnpm add lib-comfoair
 ```
 
 ## Usage 🚀
@@ -26,6 +32,8 @@ Below are basic usage examples. The library can discover devices, start sessions
 Use the discovery feature to find Zehnder ComfoConnect LAN C gateways on the same network. You can await the discovery process or attach event listeners.
 
 ```typescript
+import { ComfoControlClient } from 'lib-comfoair';
+
 // Discover a gateway with an optional limit:
 ComfoControlClient.discover({ limit: 1 })
   .then(devices => {
@@ -36,7 +44,7 @@ ComfoControlClient.discover({ limit: 1 })
   });
 
 // Or listen for discovery events:
-const discovery = ComfoControlClient.discover({ limit: 1 });
+const discovery = ComfoControlClient.discover({ limit: 10 });
 discovery.on('discover', device => {
   console.log('Discovered device:', device);
 });
@@ -45,15 +53,17 @@ discovery.on('completed', () => {
 });
 ```
 
-## How Device Discovery Works 🕵️‍♂️
+### How Device Discovery Works 🕵️‍♂️
 
 Discovery sends a broadcast message and waits for devices to respond. This works only if the gateway is on the same subnet as the host running the discovery. Most routers do not forward broadcast messages to other subnets by default.
 
-### Listening for Property Changes
+## Listening for Property Changes
 
 After obtaining the device’s info, you can register property listeners that trigger when values change:
 
 ```typescript
+import { ComfoControlClient, ComfoAirProperties } from 'lib-comfoair';
+
 // Example usage (simplified):
 const client = new ComfoControlClient({
   address: '192.168.1.10',
@@ -66,7 +76,7 @@ await client.registerPropertyListener(ComfoAirProperties.OUTDOOR_AIR_TEMPERATURE
 });
 
 // You may then connect or make a request:
-await client.getServerTime();
+console.log(await client.getServerTime());
 ```
 
 ## Available Opcodes

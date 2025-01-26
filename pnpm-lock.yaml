@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@protobuf-ts/runtime':
-        specifier: ^2.9.4
+        specifier: ~2.9
         version: 2.9.4
       tslib:
         specifier: ~2.8
