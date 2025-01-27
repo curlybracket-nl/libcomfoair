@@ -7,7 +7,13 @@ import { OpcodeMessageType, requestMessages } from './opcodes';
 import { ComfoControlMessage } from './comfoControlMessage';
 import { ComfoControlTransport } from './comfoControlTransport';
 import { NodeProductType } from './consts';
-import { DeviceProperty, PropertyNativeType, getPropertyName, deserializePropertyValue, serializePropertyValue } from './deviceProperties';
+import {
+    DeviceProperty,
+    PropertyNativeType,
+    getPropertyName,
+    deserializePropertyValue,
+    serializePropertyValue,
+} from './deviceProperties';
 import { removeArrayElement } from './util/arrayUtils';
 import { timeout } from './util/asyncUtils';
 import { ErrorCodes, NodeProperty } from './rmiProperties';
@@ -35,7 +41,7 @@ export interface DiscoverOptions extends LoggingOptions {
     abortSignal?: AbortSignal;
 }
 
-export interface ComfoControlClientOptions extends LoggingOptions  {
+export interface ComfoControlClientOptions extends LoggingOptions {
     /**
      * IP address of the device
      */
@@ -191,13 +197,13 @@ export class ComfoControlClient {
         return new DiscoveryOperation(
             options?.broadcastAddresses ?? NetworkUtils.getBroadcastAddresses(),
             options?.port,
-            ComfoControlClient.wrapLogger(new Logger('DiscoveryOperation'), options)
+            ComfoControlClient.wrapLogger(new Logger('DiscoveryOperation'), options),
         ).discover(
             {
                 timeout: options?.timeout ?? 30000,
                 limit: options?.limit,
             },
-            options?.abortSignal
+            options?.abortSignal,
         );
     }
 
@@ -301,14 +307,18 @@ export class ComfoControlClient {
         this.pendingReplies[requestId] = new DeferredPromise<ComfoControlMessage>();
         this.pendingReplies[requestId].finally(() => delete this.pendingReplies[requestId]);
 
-        return timeout(this.pendingReplies[requestId].then((response) => {
-            if (response.opcode !== responseOpcode) {
-                throw new Error(
-                    `Unexpected response opcode: ${Opcode[response.opcode]} (expected: ${Opcode[responseOpcode]})`,
-                );
-            }
-            return response as unknown as OpcodeResponse<T>;
-        }), this.options.requestTimeout ?? 15000, 'Gateway did not response within the specified timeout period');
+        return timeout(
+            this.pendingReplies[requestId].then((response) => {
+                if (response.opcode !== responseOpcode) {
+                    throw new Error(
+                        `Unexpected response opcode: ${Opcode[response.opcode]} (expected: ${Opcode[responseOpcode]})`,
+                    );
+                }
+                return response as unknown as OpcodeResponse<T>;
+            }),
+            this.options.requestTimeout ?? 15000,
+            'Gateway did not response within the specified timeout period',
+        );
     }
 
     private async ensureConnected(opcode: Opcode): Promise<void> {
@@ -456,18 +466,18 @@ export class ComfoControlClient {
 
     /**
      * Reads an RMI property from the device. Predefined readable properties are available in the {@link VentilationUnitProperties} class.
-     * 
+     *
      * @example
      * ```typescript
      * const serial = await client.readProperty(VentilationUnitProperties.NODE.SERIAL_NUMBER);
      * console.log(`Serial number: ${serial}`);
      * ```
-     * 
+     *
      * @param prop The property to read.
      * @returns A promise that resolves to the value of the property.
      */
-    public async readProperty<T extends NodeProperty>(prop: T) : Promise<PropertyNativeType<T>> {
-        const response = await this.send(Opcode.CN_RMI_REQUEST, { 
+    public async readProperty<T extends NodeProperty>(prop: T): Promise<PropertyNativeType<T>> {
+        const response = await this.send(Opcode.CN_RMI_REQUEST, {
             nodeId: prop.node,
             message: Buffer.from([0x01, prop.unit, prop.subunit ?? 1, 0x10, prop.propertyId]),
         });
@@ -479,13 +489,13 @@ export class ComfoControlClient {
     //     if (props.length > 8) {
     //         throw new Error('Cannot read more than 8 properties at once');
     //     }
-        
+
     //     const targets = props.map(prop => [prop.node, prop.unit, prop.subunit ?? 1].join(':'));
     //     if (new Set(targets).size > 1) {
     //         throw new Error('Properties must be from the same node, unit and subunit');
     //     }
 
-    //     const response = await this.send(Opcode.CN_RMI_REQUEST, { 
+    //     const response = await this.send(Opcode.CN_RMI_REQUEST, {
     //         nodeId: props[0].node,
     //         message: Buffer.from([0x02, props[0].unit, props[0].subunit ?? 1, 0x10 | props.length, ...props.map(p => p.propertyId)]),
     //     });
@@ -494,20 +504,20 @@ export class ComfoControlClient {
 
     /**
      * Writes a property to the device. Predefined writable properties are available in the {@link VentilationUnitProperties} class.
-     * 
+     *
      * This methods executes a write operation on the device and waits for a comfirmation from the gateway that the operation was successful.
      * If the operation fails, an error will be thrown. See {@link ErrorCodes} for a list of possible error codes that can be thrown.
-     * 
+     *
      * @param prop The property to write.
      * @param value The value to write to the property.
      */
-    public async writeProperty<T extends NodeProperty>(prop: T, value: PropertyNativeType<T>) : Promise<void> {
+    public async writeProperty<T extends NodeProperty>(prop: T, value: PropertyNativeType<T>): Promise<void> {
         if (prop.access === 'ro') {
             throw new Error(
-                `Property ${prop.node}:${prop.unit}:${prop.subunit ?? 1}:${prop.propertyId} is read-only and cannot be written.`
+                `Property ${prop.node}:${prop.unit}:${prop.subunit ?? 1}:${prop.propertyId} is read-only and cannot be written.`,
             );
         }
-        
+
         const message = Buffer.concat([
             Buffer.from([0x03, prop.unit, prop.subunit ?? 1, prop.propertyId]),
             serializePropertyValue(prop, value),
@@ -516,8 +526,10 @@ export class ComfoControlClient {
         const response = await this.send(Opcode.CN_RMI_REQUEST, { nodeId: prop.node, message });
         const responseMessage = response.deserialize();
 
-        if (responseMessage.result !== ErrorCodes.NO_ERROR) { 
-            throw new Error(`Failed to write property: ${ErrorCodes[responseMessage.result] ?? 'UNKNOWN'} (${responseMessage.result})`);
+        if (responseMessage.result !== ErrorCodes.NO_ERROR) {
+            throw new Error(
+                `Failed to write property: ${ErrorCodes[responseMessage.result] ?? 'UNKNOWN'} (${responseMessage.result})`,
+            );
         }
     }
 }
