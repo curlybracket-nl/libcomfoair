@@ -15,5 +15,14 @@ export function wait(ms: number): Promise<void> {
  * @returns A promise that resolves when the given promise resolves or rejects when the given promise rejects or times out.
  */
 export function timeout<T>(promise: Promise<T>, ms: number, errorMessage: string): Promise<T> {
-    return Promise.race([ promise, wait(ms).then(() => Promise.reject(new Error(errorMessage)))]);
+    let timeoutHandle: NodeJS.Timeout;
+    const timeoutPromise = new Promise<T>((_, reject) => timeoutHandle = setTimeout(() => reject(new Error(errorMessage)), ms));
+    const awaitedPromise = promise.then((value) => {
+        clearTimeout(timeoutHandle);
+        return value;
+    }).catch((error) => {
+        clearTimeout(timeoutHandle);
+        throw error;
+    });
+    return Promise.race([ timeoutPromise, awaitedPromise ]);
 }
