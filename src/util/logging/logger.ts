@@ -24,6 +24,16 @@ export class Logger {
     }
 
     /**
+     * Create a new logger instance.
+     * @param name Name of the logger
+     * @param severity Severity of messages to write
+     * @returns 
+     */
+    public static create(name: string, severity: LogLevel = LogLevel.DEFAULT): Logger {
+        return new Logger(name, severity);
+    }
+
+    /**
      * Initialize the root logger with the given configuration. Can only be called once per session.
      * @example
      * ```typescript
