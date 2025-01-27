@@ -30,19 +30,37 @@ const PropertyDataTypeParsers = {
     [PropertyDataType.CN_VERSION]: (data: Buffer) => data.toString('utf8'),
 } as const;
 
+const PropertyDataTypeSerializers = {
+    [PropertyDataType.CN_BOOL]: (data: boolean) => Buffer.from([data ? 1 : 0]),
+    [PropertyDataType.CN_UINT8]: (data: number) => Buffer.from([data]),
+    [PropertyDataType.CN_UINT16]: (data: number) => Buffer.from([data & 0xff, (data >> 8) & 0xff]),
+    [PropertyDataType.CN_UINT32]: (data: number) => Buffer.from([data & 0xff, (data >> 8) & 0xff, (data >> 16) & 0xff, (data >> 24) & 0xff]),
+    [PropertyDataType.CN_INT8]: (data: number) => Buffer.from([data]),
+    [PropertyDataType.CN_INT16]: (data: number) => Buffer.from([data & 0xff, (data >> 8) & 0xff]),
+    [PropertyDataType.CN_INT32]: (data: number) => Buffer.from([data & 0xff, (data >> 8) & 0xff, (data >> 16) & 0xff, (data >> 24) & 0xff]),
+    [PropertyDataType.CN_INT64]: (data: bigint) => {
+        const buf = Buffer.alloc(8, 0);
+        buf.writeBigInt64LE(data);
+        return buf;
+    },
+    [PropertyDataType.CN_STRING]: (data: string) => Buffer.from(data, 'utf8'),
+    [PropertyDataType.CN_TIME]: (data: number) => Buffer.from([data & 0xff, (data >> 8) & 0xff, (data >> 16) & 0xff, (data >> 24) & 0xff]),
+    [PropertyDataType.CN_VERSION]: (data: string) => Buffer.from(data, 'utf8'),    
+} as const;
+
 export interface DeviceProperty {
     readonly propertyId: number;
     readonly dataType: PropertyDataType;
 }
 
 // Generic type for the property data from the parsers
-export type PropertyJsType<T extends PropertyDataType> = (typeof PropertyDataTypeParsers)[T] extends (
+type DeriveNativeDataType<T extends PropertyDataType> = (typeof PropertyDataTypeParsers)[T] extends (
     data: Buffer,
 ) => infer R
     ? R
     : never;
-export type DevicePropertyType<T extends DeviceProperty> = PropertyJsType<T['dataType']>;
-export type ComfoAirPropertyType<P extends keyof typeof ComfoAirProperties> = DevicePropertyType<
+export type PropertyNativeType<T extends { dataType: PropertyDataType }> = DeriveNativeDataType<T['dataType']>;
+export type ComfoAirPropertyType<P extends keyof typeof ComfoAirProperties> = PropertyNativeType<
     (typeof ComfoAirProperties)[P]
 >;
 
@@ -134,14 +152,38 @@ export const ComfoAirProperties = {
     COMFOCOOL_COMPRESSOR_STATE: { propertyId: 785, dataType: PropertyDataType.CN_BOOL },
 } as const;
 
+
 /**
  * Get the value of a property from the data buffer.
  * @param property The property to get the value for.
  * @param data The data buffer to read the value from.
  * @returns The value of the property.
  */
-export function getPropertyValue<T extends DeviceProperty>(property: T, data: Buffer): DevicePropertyType<T> {
-    return PropertyDataTypeParsers[property.dataType](data) as DevicePropertyType<T>;
+export function deserializePropertyValue<T extends { dataType: PropertyDataType }>(property: T, data: Buffer): PropertyNativeType<T>;
+export function deserializePropertyValue<T extends PropertyDataType>(dataType: T, data: Buffer): DeriveNativeDataType<T>;
+export function deserializePropertyValue(type: PropertyDataType | { dataType?: PropertyDataType }, data: Buffer) {
+    if (typeof type === 'object') {
+        if (!type.dataType) {
+            return data;
+        }
+        return PropertyDataTypeParsers[type.dataType](data);
+    }
+    return PropertyDataTypeParsers[type](data);
+}
+
+/**
+ * Get the value of a property from the data buffer.
+ * @param property The property to get the value for.
+ * @param data The data buffer to read the value from.
+ * @returns The value of the property.
+ */
+export function serializePropertyValue<T extends { dataType: PropertyDataType }>(property: T, value: PropertyNativeType<T>): Buffer;
+export function serializePropertyValue<T extends PropertyDataType>(dataType: T, value: DeriveNativeDataType<T>): Buffer;
+export function serializePropertyValue(type: PropertyDataType | { dataType: PropertyDataType }, value: never) {
+    if (typeof type === 'object') {
+        return PropertyDataTypeSerializers[type.dataType](value);
+    }
+    return PropertyDataTypeSerializers[type](value);
 }
 
 /**

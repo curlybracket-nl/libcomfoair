@@ -7,9 +7,10 @@ import { OpcodeMessageType, requestMessages } from './opcodes';
 import { ComfoControlMessage } from './comfoControlMessage';
 import { ComfoControlTransport } from './comfoControlTransport';
 import { NodeProductType } from './consts';
-import { DeviceProperty, DevicePropertyType, getPropertyName, getPropertyValue } from './deviceProperties';
+import { DeviceProperty, PropertyNativeType, getPropertyName, deserializePropertyValue, serializePropertyValue } from './deviceProperties';
 import { removeArrayElement } from './util/arrayUtils';
 import { timeout } from './util/asyncUtils';
+import { ErrorCodes, NodeProperty } from './rmiProperties';
 
 export interface ComfoControlLogger {
     log(message: string, ...args: unknown[]): void;
@@ -101,7 +102,7 @@ enum SessionState {
 }
 
 export interface DevicePropertyListner<P extends DeviceProperty = DeviceProperty> {
-    (update: { readonly propertyName: string; readonly value: DevicePropertyType<P> } & DeviceProperty): unknown;
+    (update: { readonly propertyName: string; readonly value: PropertyNativeType<P> } & DeviceProperty): unknown;
 }
 
 type OpcodeResponse<T extends Opcode> = T extends keyof typeof requestMessages
@@ -362,7 +363,7 @@ export class ComfoControlClient {
             return;
         }
 
-        const value = getPropertyValue(info, Buffer.from(notification.data));
+        const value = deserializePropertyValue(info, Buffer.from(notification.data));
         for (const listener of info.listners) {
             listener({
                 propertyId: info.propertyId,
@@ -451,5 +452,72 @@ export class ComfoControlClient {
             logger.setLogLevel(options.logLevel);
         }
         return logger;
+    }
+
+    /**
+     * Reads an RMI property from the device. Predefined readable properties are available in the {@link VentilationUnitProperties} class.
+     * 
+     * @example
+     * ```typescript
+     * const serial = await client.readProperty(VentilationUnitProperties.NODE.SERIAL_NUMBER);
+     * console.log(`Serial number: ${serial}`);
+     * ```
+     * 
+     * @param prop The property to read.
+     * @returns A promise that resolves to the value of the property.
+     */
+    public async readProperty<T extends NodeProperty>(prop: T) : Promise<PropertyNativeType<T>> {
+        const response = await this.send(Opcode.CN_RMI_REQUEST, { 
+            nodeId: prop.node,
+            message: Buffer.from([0x01, prop.unit, prop.subunit ?? 1, 0x10, prop.propertyId]),
+        });
+        const responseMessage = response.deserialize();
+        return deserializePropertyValue(prop.dataType, Buffer.from(responseMessage.message)) as PropertyNativeType<T>;
+    }
+
+    // public async readProperties<T extends NodeProperty>(props: T[]) : Promise<PropertyNativeType<T>> {
+    //     if (props.length > 8) {
+    //         throw new Error('Cannot read more than 8 properties at once');
+    //     }
+        
+    //     const targets = props.map(prop => [prop.node, prop.unit, prop.subunit ?? 1].join(':'));
+    //     if (new Set(targets).size > 1) {
+    //         throw new Error('Properties must be from the same node, unit and subunit');
+    //     }
+
+    //     const response = await this.send(Opcode.CN_RMI_REQUEST, { 
+    //         nodeId: props[0].node,
+    //         message: Buffer.from([0x02, props[0].unit, props[0].subunit ?? 1, 0x10 | props.length, ...props.map(p => p.propertyId)]),
+    //     });
+    //     const responseMessage = response.deserialize();
+    // }
+
+    /**
+     * Writes a property to the device. Predefined writable properties are available in the {@link VentilationUnitProperties} class.
+     * 
+     * This methods executes a write operation on the device and waits for a comfirmation from the gateway that the operation was successful.
+     * If the operation fails, an error will be thrown. See {@link ErrorCodes} for a list of possible error codes that can be thrown.
+     * 
+     * @param prop The property to write.
+     * @param value The value to write to the property.
+     */
+    public async writeProperty<T extends NodeProperty>(prop: T, value: PropertyNativeType<T>) : Promise<void> {
+        if (prop.access === 'ro') {
+            throw new Error(
+                `Property ${prop.node}:${prop.unit}:${prop.subunit ?? 1}:${prop.propertyId} is read-only and cannot be written.`
+            );
+        }
+        
+        const message = Buffer.concat([
+            Buffer.from([0x03, prop.unit, prop.subunit ?? 1, prop.propertyId]),
+            serializePropertyValue(prop, value),
+        ]);
+
+        const response = await this.send(Opcode.CN_RMI_REQUEST, { nodeId: prop.node, message });
+        const responseMessage = response.deserialize();
+
+        if (responseMessage.result !== ErrorCodes.NO_ERROR) { 
+            throw new Error(`Failed to write property: ${ErrorCodes[responseMessage.result] ?? 'UNKNOWN'} (${responseMessage.result})`);
+        }
     }
 }

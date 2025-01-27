@@ -6,5 +6,6 @@ export * from './comfoControlTransport';
 export { NodeProductType } from './consts';
 export * from './deviceProperties';
 export * from './discoveryOperation';
+export * from './rmiProperties';
 export * from './opcodes';
 export * from './util/logging/index';
