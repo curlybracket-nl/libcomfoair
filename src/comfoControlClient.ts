@@ -1,6 +1,6 @@
 import { DiscoveryOperation } from './discoveryOperation';
 import { NetworkUtils } from './util/networkUtils';
-import { Logger } from './util/logging/index';
+import { Logger, LogLevel } from './util/logging/index';
 import { Opcode, Result } from './protocol/comfoConnect';
 import { DeferredPromise } from './util/deferredPromise';
 import { OpcodeMessageType, requestMessages } from './opcodes';
@@ -9,8 +9,24 @@ import { ComfoControlTransport } from './comfoControlTransport';
 import { NodeProductType } from './consts';
 import { DeviceProperty, DevicePropertyType, getPropertyName, getPropertyValue } from './deviceProperties';
 import { removeArrayElement } from './util/arrayUtils';
+import { timeout } from './util/asyncUtils';
 
-export interface DiscoverOptions {
+export interface ComfoControlLogger {
+    log(message: string, ...args: unknown[]): void;
+}
+
+interface LoggingOptions {
+    /**
+     * Logger instance to use for logging messages.
+     */
+    logger?: ComfoControlLogger;
+    /**
+     * Log level to use for logging messages.
+     */
+    logLevel?: LogLevel;
+}
+
+export interface DiscoverOptions extends LoggingOptions {
     broadcastAddresses?: string | string[];
     port?: number;
     timeout?: number;
@@ -18,7 +34,7 @@ export interface DiscoverOptions {
     abortSignal?: AbortSignal;
 }
 
-export interface ComfoControlClientOptions {
+export interface ComfoControlClientOptions extends LoggingOptions  {
     /**
      * IP address of the device
      */
@@ -44,6 +60,11 @@ export interface ComfoControlClientOptions {
      * 4 character PIN code to authenticate with the device. Defaults to 0 when not specified.
      */
     pin?: number;
+    /**
+     * Timeout in milliseconds to wait for a response or confirmation from the device. Defaults to 15000ms.
+     * If the device does not respond within this time, the request will be considered failed and the {@link send} method will reject the promise.
+     */
+    requestTimeout?: number;
 }
 
 interface ComfoControlNode {
@@ -151,6 +172,7 @@ export class ComfoControlClient {
         private readonly options: ComfoControlClientOptions,
         private readonly logger: Logger = new Logger('ComfoAirDevice'),
     ) {
+        ComfoControlClient.wrapLogger(this.logger, options);
         this.deviceName = options.deviceName ?? NetworkUtils.getHostname() ?? 'ComfoControlClient';
         this.transport = new ComfoControlTransport(options, this.logger.createLogger('Transport'));
         this.transport.on('message', (message) => this.processMessage(message));
@@ -165,12 +187,16 @@ export class ComfoControlClient {
      * @returns A {@link DiscoveryOperation} instance that can be used to listen for discovered devices.
      */
     static discover(options?: DiscoverOptions): DiscoveryOperation {
-        return new DiscoveryOperation(options?.broadcastAddresses ?? NetworkUtils.getBroadcastAddresses()).discover(
+        return new DiscoveryOperation(
+            options?.broadcastAddresses ?? NetworkUtils.getBroadcastAddresses(),
+            options?.port,
+            ComfoControlClient.wrapLogger(new Logger('DiscoveryOperation'), options)
+        ).discover(
             {
                 timeout: options?.timeout ?? 30000,
                 limit: options?.limit,
             },
-            options?.abortSignal,
+            options?.abortSignal
         );
     }
 
@@ -230,6 +256,24 @@ export class ComfoControlClient {
     }
 
     /**
+     * Call this method to stop the session with the ComfoControl Gateway.
+     */
+    public async stopSession(): Promise<void> {
+        if (this.sessionState === SessionState.None) {
+            return;
+        }
+
+        this.logger.info('Closing session with device');
+        this.sessionState = SessionState.None;
+
+        try {
+            await this.send(Opcode.CLOSE_SESSION_REQUEST);
+        } catch (err) {
+            this.logger.error('Failed to close session:', err);
+        }
+    }
+
+    /**
      * Sends a request to the ComfoControl device and waits for a response.
      * Ensures the transport is connected and the session is active before sending the request.
      *
@@ -254,15 +298,16 @@ export class ComfoControlClient {
         }
 
         this.pendingReplies[requestId] = new DeferredPromise<ComfoControlMessage>();
-        return this.pendingReplies[requestId].then((response) => {
-            delete this.pendingReplies[requestId];
+        this.pendingReplies[requestId].finally(() => delete this.pendingReplies[requestId]);
+
+        return timeout(this.pendingReplies[requestId].then((response) => {
             if (response.opcode !== responseOpcode) {
                 throw new Error(
                     `Unexpected response opcode: ${Opcode[response.opcode]} (expected: ${Opcode[responseOpcode]})`,
                 );
             }
             return response as unknown as OpcodeResponse<T>;
-        });
+        }), this.options.requestTimeout ?? 15000, 'Gateway did not response within the specified timeout period');
     }
 
     private async ensureConnected(opcode: Opcode): Promise<void> {
@@ -394,5 +439,17 @@ export class ComfoControlClient {
                 registered: false,
             })
         );
+    }
+
+    private static wrapLogger(logger: Logger, options?: LoggingOptions): Logger {
+        if (options?.logger) {
+            logger.addPrinter({
+                printLine: (_level, _name, message, args) => options.logger?.log(message, args),
+            });
+        }
+        if (options?.logLevel) {
+            logger.setLogLevel(options.logLevel);
+        }
+        return logger;
     }
 }
