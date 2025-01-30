@@ -108,7 +108,13 @@ enum SessionState {
 }
 
 export interface DevicePropertyListner<P extends DeviceProperty = DeviceProperty> {
-    (update: { readonly propertyName: string; readonly value: PropertyNativeType<P>, readonly raw: Buffer } & DeviceProperty): unknown;
+    (
+        update: {
+            readonly propertyName: string;
+            readonly value: PropertyNativeType<P>;
+            readonly raw: Buffer;
+        } & DeviceProperty,
+    ): unknown;
 }
 
 type OpcodeResponse<T extends Opcode> = T extends keyof typeof requestMessages
@@ -380,8 +386,8 @@ export class ComfoControlClient {
                 propertyId: info.propertyId,
                 propertyName: info.propertyName,
                 dataType: info.dataType,
-                value: info.convert?.(value) ?? value, 
-                raw
+                value: info.convert?.(value) ?? value,
+                raw,
             });
         }
     }
