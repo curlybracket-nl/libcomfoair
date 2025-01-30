@@ -9,7 +9,7 @@
 export function tryCatch<T>(fn: () => T, fallback: T): T {
     try {
         return fn();
-    } catch (e) {
+    } catch {
         return fallback;
     }
 }
