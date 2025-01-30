@@ -176,7 +176,7 @@ export function deserializePropertyValue<T extends PropertyDataType>(
 ): DeriveNativeDataType<T>;
 export function deserializePropertyValue(type: PropertyDataType | { dataType?: PropertyDataType }, data: Buffer) {
     if (typeof type === 'object') {
-        if (!type.dataType) {
+        if (type.dataType === undefined) {
             return data;
         }
         return PropertyDataTypeParsers[type.dataType](data);
