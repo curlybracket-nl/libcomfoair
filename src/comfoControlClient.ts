@@ -108,7 +108,7 @@ enum SessionState {
 }
 
 export interface DevicePropertyListner<P extends DeviceProperty = DeviceProperty> {
-    (update: { readonly propertyName: string; readonly value: PropertyNativeType<P> } & DeviceProperty): unknown;
+    (update: { readonly propertyName: string; readonly value: PropertyNativeType<P>, readonly raw: Buffer } & DeviceProperty): unknown;
 }
 
 type OpcodeResponse<T extends Opcode> = T extends keyof typeof requestMessages
@@ -373,13 +373,15 @@ export class ComfoControlClient {
             return;
         }
 
-        const value = deserializePropertyValue(info, Buffer.from(notification.data));
+        const raw = Buffer.from(notification.data);
+        const value = deserializePropertyValue(info, raw);
         for (const listener of info.listners) {
             listener({
                 propertyId: info.propertyId,
                 propertyName: info.propertyName,
                 dataType: info.dataType,
-                value,
+                value: info.convert?.(value) ?? value, 
+                raw
             });
         }
     }
@@ -477,12 +479,23 @@ export class ComfoControlClient {
      * @returns A promise that resolves to the value of the property.
      */
     public async readProperty<T extends NodeProperty>(prop: T): Promise<PropertyNativeType<T>> {
+        return deserializePropertyValue(prop, await this.readPropertyRawValue(prop));
+    }
+
+    public async readPropertyRawValue(prop: NodeProperty): Promise<Buffer> {
         const response = await this.send(Opcode.CN_RMI_REQUEST, {
             nodeId: prop.node,
             message: Buffer.from([0x01, prop.unit, prop.subunit ?? 1, 0x10, prop.propertyId]),
         });
         const responseMessage = response.deserialize();
-        return deserializePropertyValue(prop.dataType, Buffer.from(responseMessage.message)) as PropertyNativeType<T>;
+
+        if (responseMessage.result !== ErrorCodes.NO_ERROR) {
+            throw new Error(
+                `Failed to read property: ${ErrorCodes[responseMessage.result] ?? 'UNKNOWN'} (${responseMessage.result})`,
+            );
+        }
+
+        return Buffer.from(responseMessage.message);
     }
 
     // public async readProperties<T extends NodeProperty>(props: T[]) : Promise<PropertyNativeType<T>> {

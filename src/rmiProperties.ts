@@ -2,7 +2,8 @@ import { PropertyDataType } from './deviceProperties';
 
 export enum NodeTypes {
     VENTILATION_UNIT = 1,
-    COMFOCONTROL_GATEWAY = 30,
+    OPTION_BOX = 2,
+    COMFOCONTROL_GATEWAY = 55,
 }
 
 export enum ErrorCodes {
@@ -304,5 +305,5 @@ export const VentilationUnitProperties = {
         // "UNKNOWN_10": { node: NodeTypes.VENTILATION_UNIT, unit: UnitTypes.NODECONFIGURATION, propertyId: 0x0A, dataType: PropertyDataType.CN_UINT8 },
         // "UNKNOWN_11": { node: NodeTypes.VENTILATION_UNIT, unit: UnitTypes.NODECONFIGURATION, propertyId: 0x0B, dataType: PropertyDataType.CN_UINT8 },
         // "UNKNOWN_12": { node: NodeTypes.VENTILATION_UNIT, unit: UnitTypes.NODECONFIGURATION, propertyId: 0x0C, dataType: PropertyDataType.CN_UINT8 },
-    },
+    }
 } as const;
