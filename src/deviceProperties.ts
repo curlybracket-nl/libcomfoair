@@ -111,15 +111,11 @@ export const ComfoAirProperties = {
     /** Preheater Power Consumption: Current Ventilation (`0f00` = 15 W) */
     PREHEATER_CURRENT_VENTILATION_POWER_CONSUMPTION: { propertyId: 146, dataType: PropertyDataType.CN_UINT16 },
     /** Days left before filters must be replaced (`8200` = 130 days) */
-    DAYS_LEFT_BEFORE_FILTER_REPLACEMENT: {
-        propertyId: 192,
-        dataType: PropertyDataType.CN_UINT16,
-        convert: (v) => v / 100,
-    },
+    DAYS_LEFT_BEFORE_FILTER_REPLACEMENT: { propertyId: 192, dataType: PropertyDataType.CN_UINT16 },
     /** Current RMOT (`7500` = 117 -> 11.7 °C) */
-    CURRENT_RMOT: { propertyId: 209, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 100 },
+    CURRENT_RMOT: { propertyId: 209, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 10 },
     /** Temperature profile target (`ee00` = 23.8 °C) */
-    TEMPERATURE_PROFILE_TARGET: { propertyId: 212, dataType: PropertyDataType.CN_UINT16, convert: (v) => v / 100 },
+    TEMPERATURE_PROFILE_TARGET: { propertyId: 212, dataType: PropertyDataType.CN_UINT16, convert: (v) => v / 10 },
     /** Avoided Heating: Avoided actual: (`b901` = 441 -> 4.41 W) */
     AVOIDED_HEATING_ACTUAL: { propertyId: 213, dataType: PropertyDataType.CN_UINT16, convert: (v) => v / 100 },
     /** Avoided Heating: Avoided year-to-date: (`dd01` = 477 kWh) */
@@ -133,15 +129,15 @@ export const ComfoAirProperties = {
     /** Avoided Cooling: Avoided total: (`dd01` = 477 kWh) */
     AVOIDED_COOLING_TOTAL: { propertyId: 218, dataType: PropertyDataType.CN_UINT16 },
     /** Temperature & Humidity: Supply Air (`aa00` = 170 -> 17.0 °C) PostHeaterTempAfter */
-    SUPPLY_AIR_TEMPERATURE: { propertyId: 221, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 100 },
+    SUPPLY_AIR_TEMPERATURE: { propertyId: 221, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 10 },
     /** Bypass state (`64` = 100%) */
     BYPASS_STATE: { propertyId: 227, dataType: PropertyDataType.CN_UINT8 },
     /** Temperature & Humidity: Extract Air (`ab00` = 171 -> 17.1 °C) */
-    EXTRACT_AIR_TEMPERATURE: { propertyId: 274, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 100 },
+    EXTRACT_AIR_TEMPERATURE: { propertyId: 274, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 10 },
     /** Temperature & Humidity: Exhaust Air (`5600` = 86 -> 8.6 °C) */
-    EXHAUST_AIR_TEMPERATURE: { propertyId: 275, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 100 },
+    EXHAUST_AIR_TEMPERATURE: { propertyId: 275, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 10 },
     /** Temperature & Humidity: Outdoor Air (`3c00` = 60 -> 6.0 °C) */
-    OUTDOOR_AIR_TEMPERATURE: { propertyId: 276, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 100 },
+    OUTDOOR_AIR_TEMPERATURE: { propertyId: 276, dataType: PropertyDataType.CN_INT16, convert: (v) => v / 10 },
     /** Temperature & Humidity: Preheated Outdoor Air (`3c00` = 60 -> 6.0 °C) */
     PREHEATED_OUTDOOR_AIR_TEMPERATURE: {
         propertyId: 277,
