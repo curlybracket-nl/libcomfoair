@@ -93,6 +93,24 @@ interface ComfoControlNode {
     mode: number;
 }
 
+export enum FanMode {
+    Away = 0,
+    Low = 1,
+    Medium = 2,
+    High = 3,
+}
+
+export enum TemperatureProfile {
+    Normal = 0,
+    Cool = 1,
+    Warm = 2,
+}
+
+export enum OperationMode {
+    Manual = 1,
+    Auto = 0
+}
+
 /**
  * Opcodes that are exempt from the session check.
  */
@@ -108,13 +126,7 @@ enum SessionState {
 }
 
 export interface DevicePropertyListner<P extends DeviceProperty = DeviceProperty> {
-    (
-        update: {
-            readonly propertyName: string;
-            readonly value: PropertyNativeType<P>;
-            readonly raw: Buffer;
-        } & DeviceProperty,
-    ): unknown;
+    (update: { readonly propertyName: string; readonly value: PropertyNativeType<P>, readonly raw: Buffer } & DeviceProperty): unknown;
 }
 
 type OpcodeResponse<T extends Opcode> = T extends keyof typeof requestMessages
@@ -386,8 +398,8 @@ export class ComfoControlClient {
                 propertyId: info.propertyId,
                 propertyName: info.propertyName,
                 dataType: info.dataType,
-                value: info.convert?.(value) ?? value,
-                raw,
+                value: info.convert?.(value) ?? value, 
+                raw
             });
         }
     }
@@ -548,6 +560,88 @@ export class ComfoControlClient {
         if (responseMessage.result !== ErrorCodes.NO_ERROR) {
             throw new Error(
                 `Failed to write property: ${ErrorCodes[responseMessage.result] ?? 'UNKNOWN'} (${responseMessage.result})`,
+            );
+        }
+    }
+
+    /**
+     * Sets the fan mode of the ventilation unit.
+     * @param mode The fan mode to set.
+     */
+    public setFanMode(mode: FanMode): Promise<void> {
+        if (mode < FanMode.Away || mode > FanMode.High) {
+            throw new Error(`Invalid fan mode: ${mode}`);
+        }
+        return this.executeRmiCommand(
+            0x84, 0x15, 1, 1,
+            0, 0, 0, 0,
+            1, 0, 0, 0, mode
+        );
+    }
+
+    /**
+     * Enables or disables bypass of the heat exchanger for the ventilation unit when true or 
+     * resets the bypass to automatic mode when false.
+     * @param bypassEnabled True to enable bypass, false to set to automatic mode.
+     */
+    public enableBypass(bypassEnabled: boolean): Promise<void> {
+        if (bypassEnabled === true) {
+            return this.executeRmiCommand(
+                0x84, 0x15, 2, 1,
+                0, 0, 0, 0,
+                0x10, 0x0e, 0, 0, 1
+            );
+        }
+        return this.executeRmiCommand(
+            0x84, 0x15, 2, 1
+        );        
+    }
+
+    /**
+     * Set the temperature profile for the ventilation unit.
+     * @param profile The temperature profile to set.
+     */
+    public setTempratureProfile(profile: TemperatureProfile): Promise<void> {
+        if (TemperatureProfile[profile] === undefined) {
+            throw new Error(`Invalid temperature profile: ${profile}`);
+        }
+        return this.executeRmiCommand(
+            0x84, 0x15, 3, 1,
+            0, 0, 0, 0,
+            0xff, 0xff, 0xff, 0xff, profile
+        );
+    }
+
+    /**
+     * Sets the operating mode of the ventilation unit.
+     * @param mode The operating mode to set.
+     */
+    public setOperatingMode(mode: OperationMode): Promise<void> {
+        switch (mode) {
+            case OperationMode.Auto:
+                return this.executeRmiCommand(
+                    0x84, 0x15, 8, 0
+                );
+            case OperationMode.Manual:
+                return this.executeRmiCommand(
+                    0x84, 0x15, 8, 1,
+                    0, 0, 0, 0,
+                    1, 0, 0, 0, 1
+                );
+            default:
+                throw new Error(`Invalid operation mode: ${mode}`);
+        }
+    }
+
+    public async executeRmiCommand(...bytes: number[]): Promise<void> {
+        const message = Buffer.from(bytes);
+
+        const response = await this.send(Opcode.CN_RMI_REQUEST, { nodeId: 1, message });
+        const responseMessage = response.deserialize();
+
+        if (responseMessage.result !== ErrorCodes.NO_ERROR) {
+            throw new Error(
+                `Failed to execute command: ${ErrorCodes[responseMessage.result] ?? 'UNKNOWN'} (${responseMessage.result})`,
             );
         }
     }
