@@ -1,7 +1,7 @@
 {
   "name": "lib-comfoair",
   "author": "Peter van Gulik <peter@curlybracket.nl>",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Library to communicate with Zehnder ComfoAirQ ventilation unit through the ComfoControl gateway",
   "license": "GPL-2.0",
   "type": "commonjs",
